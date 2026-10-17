@@ -1,0 +1,32 @@
+{
+  "deal_id": "DEMO-2026-0001",
+  "profile": "example-generic",
+  "timezone": "America/Chicago",
+  "property_address": "1234 Example Lane, Springfield",
+  "client_role": "buyer",
+  "effective_date": "2026-10-14",
+  "closing_date": "2026-11-20",
+  "terms": {
+    "earnest_money_days": 3,
+    "inspection_days": 10,
+    "repair_response_business_days": 2,
+    "title_review_days": 15,
+    "appraisal_days": 21,
+    "financing_days": 25
+  },
+  "agent": {
+    "name": "Jordan Rivera",
+    "brokerage": "Example Realty",
+    "email": "jordan@example.com",
+    "phone": "(555) 010-2000",
+    "sms_consent": true
+  },
+  "parties": [
+    {"role": "buyer", "name": "Alex Morgan", "email": "alex.morgan@example.com", "phone": "(555) 010-3000", "sms_consent": true},
+    {"role": "buyer", "name": "Sam Morgan", "email": "sam.morgan@example.com", "phone": "(555) 010-3001", "sms_consent": false},
+    {"role": "seller", "name": "Pat Lee", "email": "pat.lee@example.net"},
+    {"role": "lender", "name": "Casey Nguyen", "company": "Example Mortgage", "email": "casey@example.org", "phone": "(555) 010-4000", "sms_consent": false},
+    {"role": "title", "name": "Riley Patel", "company": "Example Title Co.", "email": "riley@example-title.com", "phone": "(555) 010-5000", "sms_consent": false},
+    {"role": "listing_agent", "name": "Morgan Blake", "company": "Other Brokerage", "email": "morgan.blake@example.com", "phone": "(555) 010-6000"}
+  ]
+}

@@ -1,0 +1,214 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Contract-to-Close Desk//c2c 0.1//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:1c7e6891d8c2e9aabba9@c2c.invalid
+DTSTAMP:20261017T140000Z
+DTSTART:20261019T213000Z
+DTEND:20261019T220000Z
+SUMMARY:DEADLINE 5:00 PM: Earnest money delivered to escrow
+LOCATION:1234 Example Lane\, Springfield
+DESCRIPTION:Your good-faith deposit must reach the title/escrow company by 
+ this time.\n\nAction: Deliver the deposit to the title company. Confirm wi
+ ring instructions by phone first.\n\nHow this date was computed: effective
+  date Wed Oct 14\, 2026 + 3 calendar days (after) = Sat Oct 17\, 2026\; no
+ t a business day\, rolled forward to Mon Oct 19\, 2026\n\nThe signed contr
+ act governs. Confirm with your agent.
+BEGIN:VALARM
+ACTION:DISPLAY
+TRIGGER:-P1D
+DESCRIPTION:Tomorrow: Earnest money delivered to escrow
+END:VALARM
+BEGIN:VALARM
+ACTION:DISPLAY
+TRIGGER:-PT2H
+DESCRIPTION:In 2 hours: Earnest money delivered to escrow
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:d3d2ab20b9041cd95c64@c2c.invalid
+DTSTAMP:20261017T140000Z
+DTSTART:20261024T213000Z
+DTEND:20261024T220000Z
+SUMMARY:DEADLINE 5:00 PM: Inspection period ends
+LOCATION:1234 Example Lane\, Springfield
+DESCRIPTION:Last day to complete inspections and act on the results under t
+ he contract's inspection terms.\n\nAction: Schedule inspections early. Tel
+ l your agent what you want to do before this deadline.\n\nHow this date wa
+ s computed: effective date Wed Oct 14\, 2026 + 10 calendar days (after) = 
+ Sat Oct 24\, 2026\; falls on a non-business day and this rule does NOT rol
+ l\n\nThe signed contract governs. Confirm with your agent.
+BEGIN:VALARM
+ACTION:DISPLAY
+TRIGGER:-P1D
+DESCRIPTION:Tomorrow: Inspection period ends
+END:VALARM
+BEGIN:VALARM
+ACTION:DISPLAY
+TRIGGER:-PT2H
+DESCRIPTION:In 2 hours: Inspection period ends
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:76eef4bbb815e47c1bb0@c2c.invalid
+DTSTAMP:20261017T140000Z
+DTSTART:20261027T213000Z
+DTEND:20261027T220000Z
+SUMMARY:DEADLINE 5:00 PM: Seller response to repair request expected
+LOCATION:1234 Example Lane\, Springfield
+DESCRIPTION:If a repair request was made\, the seller's response is due by 
+ this time.\n\nAction: Review the buyer's repair request with your agent an
+ d respond in writing.\n\nHow this date was computed: Inspection period end
+ s Sat Oct 24\, 2026 + 2 business days (after) = Tue Oct 27\, 2026\n\nThe s
+ igned contract governs. Confirm with your agent.
+BEGIN:VALARM
+ACTION:DISPLAY
+TRIGGER:-P1D
+DESCRIPTION:Tomorrow: Seller response to repair request expected
+END:VALARM
+BEGIN:VALARM
+ACTION:DISPLAY
+TRIGGER:-PT2H
+DESCRIPTION:In 2 hours: Seller response to repair request expected
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:8e0578740a0cb178a513@c2c.invalid
+DTSTAMP:20261017T140000Z
+DTSTART:20261029T213000Z
+DTEND:20261029T220000Z
+SUMMARY:DEADLINE 5:00 PM: Title commitment review ends
+LOCATION:1234 Example Lane\, Springfield
+DESCRIPTION:Last day to object to issues found in the title commitment.\n\n
+ Action: Read the title commitment with your agent. Raise any concerns befo
+ re this date.\n\nHow this date was computed: effective date Wed Oct 14\, 2
+ 026 + 15 calendar days (after) = Thu Oct 29\, 2026\n\nThe signed contract 
+ governs. Confirm with your agent.
+BEGIN:VALARM
+ACTION:DISPLAY
+TRIGGER:-P1D
+DESCRIPTION:Tomorrow: Title commitment review ends
+END:VALARM
+BEGIN:VALARM
+ACTION:DISPLAY
+TRIGGER:-PT2H
+DESCRIPTION:In 2 hours: Title commitment review ends
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:e8adf05c1fbc7d44934d@c2c.invalid
+DTSTAMP:20261017T140000Z
+DTSTART:20261104T223000Z
+DTEND:20261104T230000Z
+SUMMARY:DEADLINE 5:00 PM: Appraisal deadline
+LOCATION:1234 Example Lane\, Springfield
+DESCRIPTION:The appraisal should be completed and any appraisal contingency
+  resolved by this time.\n\nAction: Confirm the appraisal is ordered and on
+  schedule.\n\nHow this date was computed: effective date Wed Oct 14\, 2026
+  + 21 calendar days (after) = Wed Nov 4\, 2026\n\nThe signed contract gove
+ rns. Confirm with your agent.
+BEGIN:VALARM
+ACTION:DISPLAY
+TRIGGER:-P1D
+DESCRIPTION:Tomorrow: Appraisal deadline
+END:VALARM
+BEGIN:VALARM
+ACTION:DISPLAY
+TRIGGER:-PT2H
+DESCRIPTION:In 2 hours: Appraisal deadline
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:bd545f77de34fb010da2@c2c.invalid
+DTSTAMP:20261017T140000Z
+DTSTART:20261109T223000Z
+DTEND:20261109T230000Z
+SUMMARY:DEADLINE 5:00 PM: Loan approval deadline
+LOCATION:1234 Example Lane\, Springfield
+DESCRIPTION:Last day under the financing terms to obtain loan approval or a
+ ct on the financing contingency.\n\nAction: Send every document your lende
+ r asks for the same day. Don't open new credit or change jobs.\n\nHow this
+  date was computed: effective date Wed Oct 14\, 2026 + 25 calendar days (a
+ fter) = Sun Nov 8\, 2026\; not a business day\, rolled forward to Mon Nov 
+ 9\, 2026\n\nThe signed contract governs. Confirm with your agent.
+BEGIN:VALARM
+ACTION:DISPLAY
+TRIGGER:-P1D
+DESCRIPTION:Tomorrow: Loan approval deadline
+END:VALARM
+BEGIN:VALARM
+ACTION:DISPLAY
+TRIGGER:-PT2H
+DESCRIPTION:In 2 hours: Loan approval deadline
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:955f8d23ebdc49a93688@c2c.invalid
+DTSTAMP:20261017T140000Z
+DTSTART:20261113T223000Z
+DTEND:20261113T230000Z
+SUMMARY:DEADLINE 5:00 PM: Homeowner's insurance bound
+LOCATION:1234 Example Lane\, Springfield
+DESCRIPTION:Your lender needs proof of insurance well before closing. This 
+ is a practical target\, not a contract date.\n\nAction: Choose a policy an
+ d send the declarations page to your lender.\n\nHow this date was computed
+ : closing date Fri Nov 20\, 2026 - 7 calendar days (before) = Fri Nov 13\,
+  2026\n\nThe signed contract governs. Confirm with your agent.
+BEGIN:VALARM
+ACTION:DISPLAY
+TRIGGER:-P1D
+DESCRIPTION:Tomorrow: Homeowner's insurance bound
+END:VALARM
+BEGIN:VALARM
+ACTION:DISPLAY
+TRIGGER:-PT2H
+DESCRIPTION:In 2 hours: Homeowner's insurance bound
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:fdffc134f475b6167e32@c2c.invalid
+DTSTAMP:20261017T140000Z
+DTSTART:20261119T213000Z
+DTEND:20261119T220000Z
+SUMMARY:DEADLINE 4:00 PM: Final walkthrough
+LOCATION:1234 Example Lane\, Springfield
+DESCRIPTION:A last look at the home to confirm its condition and any agreed
+  repairs.\n\nAction: Book a time with your agent.\n\nHow this date was com
+ puted: closing date Fri Nov 20\, 2026 - 1 calendar day (before) = Thu Nov 
+ 19\, 2026\n\nThe signed contract governs. Confirm with your agent.
+BEGIN:VALARM
+ACTION:DISPLAY
+TRIGGER:-P1D
+DESCRIPTION:Tomorrow: Final walkthrough
+END:VALARM
+BEGIN:VALARM
+ACTION:DISPLAY
+TRIGGER:-PT2H
+DESCRIPTION:In 2 hours: Final walkthrough
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:4a3d94d8846b3e608323@c2c.invalid
+DTSTAMP:20261017T140000Z
+DTSTART:20261120T153000Z
+DTEND:20261120T160000Z
+SUMMARY:DEADLINE 10:00 AM: Closing
+LOCATION:1234 Example Lane\, Springfield
+DESCRIPTION:Signing and funding at the title company. Bring a government ph
+ oto ID.\n\nAction: Title will confirm the exact time and the final amount 
+ due.\n\nHow this date was computed: closing date as written: Fri Nov 20\, 
+ 2026\n\nThe signed contract governs. Confirm with your agent.
+BEGIN:VALARM
+ACTION:DISPLAY
+TRIGGER:-P1D
+DESCRIPTION:Tomorrow: Closing
+END:VALARM
+BEGIN:VALARM
+ACTION:DISPLAY
+TRIGGER:-PT2H
+DESCRIPTION:In 2 hours: Closing
+END:VALARM
+END:VEVENT
+END:VCALENDAR

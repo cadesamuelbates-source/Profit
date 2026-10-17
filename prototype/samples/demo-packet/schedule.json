@@ -1,0 +1,86 @@
+{
+  "deal_id": "DEMO-2026-0001",
+  "profile": "example-generic",
+  "profile_status": "EXAMPLE ONLY - not verified against any state's contract form. Replace with a profile built from your state's current form and reviewed by your broker or an attorney before real use.",
+  "timezone": "America/Chicago",
+  "deadlines": [
+    {
+      "key": "earnest_money",
+      "label": "Earnest money delivered to escrow",
+      "due": "2026-10-19T17:00:00-05:00",
+      "owner": "buyer",
+      "explanation": "effective date Wed Oct 14, 2026 + 3 calendar days (after) = Sat Oct 17, 2026; not a business day, rolled forward to Mon Oct 19, 2026",
+      "warnings": []
+    },
+    {
+      "key": "inspection_end",
+      "label": "Inspection period ends",
+      "due": "2026-10-24T17:00:00-05:00",
+      "owner": "buyer",
+      "explanation": "effective date Wed Oct 14, 2026 + 10 calendar days (after) = Sat Oct 24, 2026; falls on a non-business day and this rule does NOT roll",
+      "warnings": [
+        "'Inspection period ends' lands on Sat Oct 24, 2026 (non-business day) and does not roll; confirm the contract's weekend/holiday rule for this deadline"
+      ]
+    },
+    {
+      "key": "inspection_response",
+      "label": "Seller response to repair request expected",
+      "due": "2026-10-27T17:00:00-05:00",
+      "owner": "seller",
+      "explanation": "Inspection period ends Sat Oct 24, 2026 + 2 business days (after) = Tue Oct 27, 2026",
+      "warnings": []
+    },
+    {
+      "key": "title_review",
+      "label": "Title commitment review ends",
+      "due": "2026-10-29T17:00:00-05:00",
+      "owner": "buyer",
+      "explanation": "effective date Wed Oct 14, 2026 + 15 calendar days (after) = Thu Oct 29, 2026",
+      "warnings": []
+    },
+    {
+      "key": "appraisal",
+      "label": "Appraisal deadline",
+      "due": "2026-11-04T17:00:00-06:00",
+      "owner": "lender",
+      "explanation": "effective date Wed Oct 14, 2026 + 21 calendar days (after) = Wed Nov 4, 2026",
+      "warnings": []
+    },
+    {
+      "key": "financing",
+      "label": "Loan approval deadline",
+      "due": "2026-11-09T17:00:00-06:00",
+      "owner": "buyer",
+      "explanation": "effective date Wed Oct 14, 2026 + 25 calendar days (after) = Sun Nov 8, 2026; not a business day, rolled forward to Mon Nov 9, 2026",
+      "warnings": []
+    },
+    {
+      "key": "insurance",
+      "label": "Homeowner's insurance bound",
+      "due": "2026-11-13T17:00:00-06:00",
+      "owner": "buyer",
+      "explanation": "closing date Fri Nov 20, 2026 - 7 calendar days (before) = Fri Nov 13, 2026",
+      "warnings": []
+    },
+    {
+      "key": "walkthrough",
+      "label": "Final walkthrough",
+      "due": "2026-11-19T16:00:00-06:00",
+      "owner": "buyer",
+      "explanation": "closing date Fri Nov 20, 2026 - 1 calendar day (before) = Thu Nov 19, 2026",
+      "warnings": []
+    },
+    {
+      "key": "closing",
+      "label": "Closing",
+      "due": "2026-11-20T10:00:00-06:00",
+      "owner": "title",
+      "explanation": "closing date as written: Fri Nov 20, 2026",
+      "warnings": []
+    }
+  ],
+  "skipped": [],
+  "warnings": [
+    "'Inspection period ends' lands on Sat Oct 24, 2026 (non-business day) and does not roll; confirm the contract's weekend/holiday rule for this deadline"
+  ]
+}

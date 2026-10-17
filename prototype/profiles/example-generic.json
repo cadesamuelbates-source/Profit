@@ -1,0 +1,127 @@
+{
+  "profile_id": "example-generic",
+  "status": "EXAMPLE ONLY - not verified against any state's contract form. Replace with a profile built from your state's current form and reviewed by your broker or an attorney before real use.",
+  "timezone": "America/Chicago",
+  "federal_holidays": true,
+  "extra_holidays": [],
+  "reminders": [
+    {"days_before": 2, "at": "09:00"},
+    {"days_before": 0, "at": "09:00"}
+  ],
+  "deadlines": [
+    {
+      "key": "earnest_money",
+      "label": "Earnest money delivered to escrow",
+      "anchor": "effective_date",
+      "days": {"term": "earnest_money_days"},
+      "count": "calendar",
+      "roll": "forward",
+      "due_time": "17:00",
+      "owner": "buyer",
+      "meaning": "Your good-faith deposit must reach the title/escrow company by this time.",
+      "action": "Deliver the deposit to the title company. Confirm wiring instructions by phone first."
+    },
+    {
+      "key": "inspection_end",
+      "label": "Inspection period ends",
+      "anchor": "effective_date",
+      "days": {"term": "inspection_days"},
+      "count": "calendar",
+      "roll": "none",
+      "due_time": "17:00",
+      "owner": "buyer",
+      "meaning": "Last day to complete inspections and act on the results under the contract's inspection terms.",
+      "action": "Schedule inspections early. Tell your agent what you want to do before this deadline."
+    },
+    {
+      "key": "inspection_response",
+      "label": "Seller response to repair request expected",
+      "anchor": "inspection_end",
+      "days": {"term": "repair_response_business_days"},
+      "count": "business",
+      "roll": "none",
+      "due_time": "17:00",
+      "owner": "seller",
+      "optional": true,
+      "meaning": "If a repair request was made, the seller's response is due by this time.",
+      "action": "Review the buyer's repair request with your agent and respond in writing."
+    },
+    {
+      "key": "title_review",
+      "label": "Title commitment review ends",
+      "anchor": "effective_date",
+      "days": {"term": "title_review_days"},
+      "count": "calendar",
+      "roll": "forward",
+      "due_time": "17:00",
+      "owner": "buyer",
+      "optional": true,
+      "meaning": "Last day to object to issues found in the title commitment.",
+      "action": "Read the title commitment with your agent. Raise any concerns before this date."
+    },
+    {
+      "key": "appraisal",
+      "label": "Appraisal deadline",
+      "anchor": "effective_date",
+      "days": {"term": "appraisal_days"},
+      "count": "calendar",
+      "roll": "forward",
+      "due_time": "17:00",
+      "owner": "lender",
+      "optional": true,
+      "meaning": "The appraisal should be completed and any appraisal contingency resolved by this time.",
+      "action": "Confirm the appraisal is ordered and on schedule."
+    },
+    {
+      "key": "financing",
+      "label": "Loan approval deadline",
+      "anchor": "effective_date",
+      "days": {"term": "financing_days"},
+      "count": "calendar",
+      "roll": "forward",
+      "due_time": "17:00",
+      "owner": "buyer",
+      "optional": true,
+      "meaning": "Last day under the financing terms to obtain loan approval or act on the financing contingency.",
+      "action": "Send every document your lender asks for the same day. Don't open new credit or change jobs."
+    },
+    {
+      "key": "insurance",
+      "label": "Homeowner's insurance bound",
+      "anchor": "closing_date",
+      "days": {"fixed": 7},
+      "direction": "before",
+      "count": "calendar",
+      "roll": "backward",
+      "due_time": "17:00",
+      "owner": "buyer",
+      "meaning": "Your lender needs proof of insurance well before closing. This is a practical target, not a contract date.",
+      "action": "Choose a policy and send the declarations page to your lender."
+    },
+    {
+      "key": "walkthrough",
+      "label": "Final walkthrough",
+      "anchor": "closing_date",
+      "days": {"fixed": 1},
+      "direction": "before",
+      "count": "calendar",
+      "roll": "backward",
+      "due_time": "16:00",
+      "owner": "buyer",
+      "meaning": "A last look at the home to confirm its condition and any agreed repairs.",
+      "action": "Book a time with your agent."
+    },
+    {
+      "key": "closing",
+      "label": "Closing",
+      "anchor": "closing_date",
+      "days": {"fixed": 0},
+      "count": "calendar",
+      "roll": "none",
+      "due_time": "10:00",
+      "owner": "title",
+      "meaning": "Signing and funding at the title company. Bring a government photo ID.",
+      "action": "Title will confirm the exact time and the final amount due."
+    }
+  ]
+}

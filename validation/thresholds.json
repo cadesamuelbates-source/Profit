@@ -1,0 +1,20 @@
+{
+  "_comment": "Pre-registered 2026-10-17, before any outreach. Do not edit after the first contact is logged in tracker.csv. The funnel report prints this file's SHA-256 so any later edit is visible. Rationale: docs/05-validation-plan.md.",
+  "offer": "Contract-to-close setup + human-verified deadline schedule + client timeline page + calendar invites + reminder schedule, $129 per file, invoiced on delivery, due in 7 days",
+  "audience": "Licensed agents in the founder's market with >= 12 closed sides in the last 12 months who do not use a paid full-service transaction coordinator on most files",
+  "min_qualified_contacts": 40,
+  "paid_window_days": 30,
+  "repeat_window_days": 60,
+  "continue": {
+    "min_paid_agents": 4,
+    "min_repeat_paid_agents": 2,
+    "max_median_setup_minutes": 30
+  },
+  "stop": {
+    "max_client_visible_date_errors": 0,
+    "min_interviews_for_pain_test": 15,
+    "min_pain_share": 0.25
+  },
+  "cost_limit_usd": 100,
+  "founder_hours_limit_excluding_paid_delivery": 30
+}
