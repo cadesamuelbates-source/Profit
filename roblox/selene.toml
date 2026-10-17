@@ -1,0 +1,5 @@
+std = "roblox"
+
+[lints]
+# Tests run under Lune, which provides its own globals via @lune/* requires.
+global_usage = "warn"
