@@ -3,3 +3,5 @@ __pycache__/
 *.pyc
 prototype/data/
 *.salt
+roblox/roblox.yml
+roblox/build/
