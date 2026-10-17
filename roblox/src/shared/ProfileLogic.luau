@@ -24,6 +24,12 @@ export type Profile = {
 	firstJoinDay: number?,
 	joinDays: { number },
 	purchaseLedger: { string },
+	ownedDecor: { [string]: boolean },
+	ownedTools: { [string]: boolean },
+	buyerBook: { [string]: { sold: boolean, dream: boolean } },
+	bestPriceByTier: { [string]: number },
+	lastBonusDay: number?,
+	claimedFreeShack: boolean,
 }
 
 export type Meta = { lockId: string?, lockedAt: number? }
@@ -41,7 +47,24 @@ function ProfileLogic.default(): Profile
 		firstJoinDay = nil,
 		joinDays = {},
 		purchaseLedger = {},
+		ownedDecor = {},
+		ownedTools = {},
+		buyerBook = {},
+		bestPriceByTier = {},
+		lastBonusDay = nil,
+		claimedFreeShack = false,
 	}
+end
+
+local function copyTrueSet(source: any, target: { [string]: boolean })
+	if type(source) ~= "table" then
+		return
+	end
+	for id, owned in source do
+		if type(id) == "string" and owned == true then
+			target[id] = true
+		end
+	end
 end
 
 local function nonNegativeInteger(value: any, fallback: number): number
@@ -66,13 +89,27 @@ function ProfileLogic.reconcile(raw: any): Profile
 	if type(raw.firstJoinDay) == "number" then
 		profile.firstJoinDay = nonNegativeInteger(raw.firstJoinDay, 0)
 	end
-	if type(raw.ownedCosmetics) == "table" then
-		for id, owned in raw.ownedCosmetics do
-			if type(id) == "string" and owned == true then
-				profile.ownedCosmetics[id] = true
+	copyTrueSet(raw.ownedCosmetics, profile.ownedCosmetics)
+	copyTrueSet(raw.ownedDecor, profile.ownedDecor)
+	copyTrueSet(raw.ownedTools, profile.ownedTools)
+	if type(raw.buyerBook) == "table" then
+		for id, entry in raw.buyerBook do
+			if type(id) == "string" and type(entry) == "table" then
+				profile.buyerBook[id] = { sold = entry.sold == true, dream = entry.dream == true }
 			end
 		end
 	end
+	if type(raw.bestPriceByTier) == "table" then
+		for tier, price in raw.bestPriceByTier do
+			if type(tier) == "string" and type(price) == "number" then
+				profile.bestPriceByTier[tier] = nonNegativeInteger(price, 0)
+			end
+		end
+	end
+	if type(raw.lastBonusDay) == "number" then
+		profile.lastBonusDay = nonNegativeInteger(raw.lastBonusDay, 0)
+	end
+	profile.claimedFreeShack = raw.claimedFreeShack == true
 	if type(raw.equipped) == "table" then
 		for slot, id in raw.equipped do
 			if type(slot) == "string" and type(id) == "string" then

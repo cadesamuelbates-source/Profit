@@ -1,0 +1,28 @@
+{
+  "_comment": "Pre-registered 2026-10-17 before any playtest. Do not edit after the first tester joins; record any change and reason in roblox/ACCEPTANCE.md. All thresholds are judgment calls unless marked official; sources in docs/design-spec.json (playtest_metrics).",
+  "cohort_minimum_for_retention": 300,
+  "state_cohort_source": "RFY, ads, or friends/family - report separately; friends/family never count toward pass/fail",
+  "gates": {
+    "bounce": { "reach_step3_min": 0.85, "reach_step6_min": 0.75, "fix_before_more_testing_if_step3_below": 0.70 },
+    "first_flip": { "reach_step9_min": 0.70, "median_seconds_max": 180, "p90_seconds_max": 300, "basis": "official: fun within 5 minutes" },
+    "per_step_dropoff_max": 0.15,
+    "hint_rate_max": 0.30,
+    "one_more_house": { "step11_of_step9_min": 0.60, "step11_of_joiners_min": 0.50 },
+    "reveal_exit_rate_max": 0.03,
+    "pipe": { "first_try_success_min": 0.40, "first_try_success_max": 0.70, "job_abandonment_max": 0.10, "redesign_if_abandonment_above": 0.15 },
+    "staging": { "staged_price_lift_min": 0.15, "share_sales_s_ge_half_min": 0.60, "median_s_rise_by_flip3_min": 0.15 },
+    "session_minutes": { "pass": 12, "strong": 15, "stop_below": 7, "basis": "GameAnalytics 2025 P50 ~6.6, P75 ~14.5 (secondary)" },
+    "d1": { "pass": 0.10, "strong": 0.15, "stop_below": 0.06, "basis": "GameAnalytics 2025 median ~10%, P90 ~15% for 13-18 min sessions (secondary, undefined denominator)" },
+    "d7": { "pass": 0.025, "add_content_before_scaling_below": 0.01 },
+    "d8_28_among_d1_returners_min": 0.25,
+    "coop": { "crew_share_of_10min_sessions_min": 0.20, "crew_d1_lift_min": 1.2 },
+    "solo_health": { "first_flip_gap_points_max": 5, "solo_session_ratio_min": 0.80 },
+    "integrity": { "save_failure_rate_max": 0.005, "duplicate_grants_max": 0, "normal_player_rejected_hit_rate_max": 0.02, "soft_locks_in_20_flips_max": 0 },
+    "laugh_check_unprompted_min": 0.60
+  },
+  "decision": {
+    "continue_to_content_and_kids_select_path": "bounce, first_flip, one_more_house, session_minutes.pass, d1.pass all met on a >=300 RFY or ads cohort",
+    "iterate": "any gate missed but no stop condition",
+    "stop_roblox_track": "session_minutes below stop OR d1 below stop on two consecutive >=300 cohorts after one iteration"
+  }
+}

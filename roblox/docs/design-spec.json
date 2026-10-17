@@ -1,0 +1,348 @@
+{
+ "scores": [
+  {
+   "angle": "fun-first",
+   "fun": 5,
+   "retention": 4,
+   "buildability": 2,
+   "kid_safety_and_policy": 4,
+   "measurability": 5,
+   "notes": "The strongest feel and humor: the pipe squirt, the raccoon, Combo Bonk, a reveal of 25 s or less and buyer reactions, with no losing flips. Retention rests on goals rather than timers (Your Street, Buyer Album, visible tiers). It is too big for one person in two weeks: six bespoke jobs, three of them continuous and client-predicted (scrub, mow, paint strips), a Team Move on every job, Robo-Buddy AI, NPC walk-ups with four reaction tiers and signature celebrations, and Your Street rendering. Its own risk list says the juice depends on sound, which needs Creator Store audio IDs and breaks the no-imported-assets graybox rule. There is an internal numbers error: FTUE step 10 says the Starter Shack sale is '270 + 30 tip' with Dream Home, but Dream Home needs C >= 1 and M = 1, which gives an offer of at least 0.85 x 1.4 x 300 = 357. Instrumentation is excellent (12 frozen steps, a HouseFlip funnel with a per-house session id, and a reason on every threshold)."
+  },
+  {
+   "angle": "social-retention",
+   "fun": 4,
+   "retention": 5,
+   "buildability": 1,
+   "kid_safety_and_policy": 3.5,
+   "measurability": 4,
+   "notes": "It has the richest retention design: daily seeded listings with a Practice House, rested Reputation, Showcases, anonymous icon stickers, friend-pair Crew Milestones, and Flip and Buyer Journals. The 'Why this price' breakdown and the three-buyer trade-off are the clearest expression of the buyer-taste differentiator. It is the least buildable of the three: 8 lots, 8 jobs including a welded two-player beam carry, a deterministic pipe-rotation puzzle and a TrussPart ladder, plus ListingGen, Showcase persistence and rendering, stickers, milestones and about 12 custom events. That is weeks beyond a two-week graybox. The safety surface is larger: showcases shown to strangers need IsContentSharingAllowed gating and a questionnaire Media declaration, friend userIds are stored in profiles, a global daily rotation may still read as FOMO, and the pass name 'Founders' Paint Truck' implies early-supporter exclusivity. The FTUE economy does not add up: step 10 needs 150 coins but the step-8 balance is about 95, and the text is garbled. Metrics are thoughtful (co-op retention lift, solo health, TasteScore, D8-28)."
+  },
+  {
+   "angle": "scope-safety",
+   "fun": 2.5,
+   "retention": 3,
+   "buildability": 5,
+   "kid_safety_and_policy": 4.5,
+   "measurability": 5,
+   "notes": "It is the most buildable and internally consistent. Its fields match the existing ProfileLogic (flipsCompleted, unlockedTier default 1, xp). It uses one PromptTriggered handler, clients send only ids, and houses are about 40 Parts. Its worked numbers check out: a 313-coin first sale, then a 150-coin decor buy, leaves enough for the 100-coin second Shack. It also correctly states that rojo build fails today, which I confirmed by running it. Fun is the weak point: almost every job is 'hold E for 1 s' repeated about 18 times, with no skill, joke or reveal beat, which risks the 61-180 s bounce. About 90 minutes of content is thin for D7. Two minor policy and API issues: it records the free Starter Shack as an Onboarding economy transaction, but LogEconomyEvent amounts must be positive, so a 0-coin event is invalid and should not be logged; and auto-joining a friend's crew on spawn removes player choice. Its measurability is the best of the three, with per-step drop-off caps, a HintShown rate, a staging-lift metric and stated cohort minimums."
+  }
+ ],
+ "winner": "scope-safety",
+ "grafted_from_runners_up": [
+  "fun-first: Fix the Leaky Pipe timing-bar job with the 'miss squirts you' joke, zone widening after each miss and a 'Hold pipe' helper prompt (added to Tier 1 so the first house has a laugh)",
+  "fun-first: Smash the Junk as quick tap-bonks (HoldDuration 0, server-capped rate) with cubes popping off, replacing slow 1 s holds on junk",
+  "fun-first: Shoo the Raccoon as a Tier 2 signature job (a procedural part-built critter tweening between 4 spots, no harm), marked as the first cut if the schedule slips",
+  "fun-first: short reveal show of 12 s or less (camera tween, dirty overlay sweep, confetti) and a part-built buyer NPC with 4 reaction tiers ending in the Dream Home 'faint'",
+  "fun-first: Dream Home tip and Buyer Book stamps (album stickers) as non-expiring collection goals",
+  "fun-first: 'Next house' is always a deliberate press with no auto-start or countdown, and no flip can lose coins",
+  "fun-first: Your Street as the post-MVP ending system",
+  "social-retention: a 'Why this price' line-by-line breakdown on the live sign and summary card, written in words and icons",
+  "social-retention: server-side timing judgment with a stored sweep start and 150 ms latency tolerance (applied to the pipe)",
+  "social-retention: anti-grief rules (work only moves forward, helpers cannot sell or spend, the owner can clear any pad) and an on-screen contributor rule",
+  "social-retention: a Crew funnel plus co-op retention-lift, solo-health and D8-28 playtest metrics",
+  "social-retention: default lot mode Open (for RFY strangers) instead of Friends, with no auto-join; friends get an opt-in 'Join crew' icon instead",
+  "social-retention: daily listings, Showcases and stickers, rested bonus and Crew Milestones carried as deferred items, not MVP"
+ ],
+ "policy_violations_found": [
+  "No hard Roblox policy violation in any design: none has paid random items, paid trading, coin sales, developer products, countdowns or pay-to-skip, and all three exclude free text, private-space interactions and custom chat.",
+  "scope-safety (API contract): it logs the free first Starter Shack as an Onboarding economy transaction. LogEconomyEvent requires a positive amount, so a 0-coin event is invalid. Fix: log no economy event for a free grant (use the onboarding step instead).",
+  "social-retention (API contract): the Tiny Shed is pre-bought and logged as a Sink/Onboarding event funded by a 50-coin starter grant. That is valid, but the FTUE balance then cannot afford the 150-coin step 10, so the funnel step is unreachable as specified.",
+  "fun-first (brief constraint, not Roblox policy): the feel depends on sound effects that need Creator Store audio IDs, which breaks the 'procedural geometry, no imported assets' graybox rule. Final spec: no audio in the graybox.",
+  "social-retention (pressure-wording risk): the pass name 'Founders' Paint Truck' implies early-supporter exclusivity or scarcity. That conflicts with the no-false-scarcity monetization guidance, even though an earned truck exists.",
+  "social-retention (content-sharing surface): Showcases rendered to strangers, and stickers from them, need an IsContentSharingAllowed check and a questionnaire Media declaration. The design gates this, but it widens the cross-user surface for under-16s, so it is deferred in the final spec.",
+  "social-retention (FOMO perception risk): a global daily listing rotation is mitigated by having no countdowns plus a Practice House, but it is still a daily-return lever; deferred.",
+  "scope-safety (consent/UX): auto-joining a friend's crew on spawn removes player choice. Replaced with an opt-in prompt.",
+  "fun-first (data inconsistency, not policy): FTUE step 10's '270 sale + 30 tip' Dream Home on the Starter Shack is impossible under its own formula. Fixed by adopting the winner's formula with worked examples verified in Lune specs.",
+  "All designs (process): any public test needs the full maturity questionnaire first (an unrated game is unplayable to the public), plus founder ID verification and 2FA before reaching under-16s. Graybox iteration stays private (Studio and collaborator or early-tester playtests)."
+ ],
+ "spec": {
+  "angle": "scope-safety base with fun-first feel grafts and social-retention metrics",
+  "pitch": "1-4 players fix up a run-down graybox house in a few laugh-filled minutes (bonk the junk, get squirted by the leaky pipe), stage it for a buyer whose taste is shown before you buy, watch the live price climb, then enjoy a quick reveal while the buyer reacts. Robux never changes the game.",
+  "pillars": [
+   "Every flip finishes in minutes: a solo Tier 1 flip takes about 2.5 min, so the first sale lands well before the 61-180 s bounce window ends and inside Roblox's 'fun within 5 minutes' guidance.",
+   "Mistakes are jokes, not losses: a missed pipe squirts you, no flip can lose coins, and the worst buyer reaction is a polite head-scratch.",
+   "Staging is a puzzle, not a gamble: the buyer's Love, Like and Dislike are shown before purchase, and the live 'Why this price' sign shows every choice.",
+   "Help is always welcome, never required: work stacks, helpers earn Crew Pay, solo is complete, and nothing needs chat.",
+   "The server decides everything: clients send only ids, and all outcomes are computed, validated and saved on the server.",
+   "Fair by construction: the MVP has zero Robux products, later passes are cosmetic only with an earned option in every slot, coins are never sold, and Lune tests plus ShopRules.validateCatalog enforce this."
+  ],
+  "core_loop": [
+   "1. LIST: at your lot's Listing Board, choose one of 2 listings per unlocked tier. Each card shows the tier, the price B_t, job icons and the buyer card (Loves X, Likes Y, Dislikes Z as heart, thumbs-up and thumbs-down icons). Hold to buy (prompt HoldDuration 1.0). The server checks coins and tier, deducts B_t, saves, then logs Sink/Shop with itemSku house_t1, house_t2 or house_t3. The first Starter Shack is free and logs no economy event.",
+   "2. BUILD: the server procedurally builds the open-plan house (floor, walls, wedge roof, porch, yard, about 40 Parts, ModelStreamingMode Atomic) with tagged 'dirty overlay' parts and glowing job spots. Every ProximityPrompt sets HoldDuration, MaxActivationDistance and RequiresLineOfSight explicitly.",
+   "3. FIX: crew members follow per-player 'next job' arrows to spots. Accepted hits add tool power to a spot's Work. Spots visibly change, and the shared Condition bar C and the live estimate on the For Sale sign rise. The server checks distance (12 studs or less), crew membership, spot state and the per-job rate cap through RateLimiter.",
+   "4. STAGE: at C >= 0.5 the staging pads light up (3, 4 or 5). The picker shows owned decor pre-badged with heart, thumbs or neutral for this buyer. The client sends StageDecor(slotId, decorId) strings only. The server validates ownership and places a colored primitive, then the estimate updates.",
+   "5. SELL AND REVEAL: the owner holds Sell (2.0 s). On the Starter Shack this needs C = 1 and at least one decor piece; later tiers need C >= 0.5. The server computes P and pays, saves through session-locked UpdateAsync, then logs Source/Gameplay. A reveal of 12 s or less follows: camera tween to the front, the dirty overlay sweeps away, confetti, and the part-built buyer walks up and reacts in one of 4 tiers. The summary card shows Base, Repairs, Staging, Crew, Dream Home tip and Total.",
+   "6. SPEND AND REPEAT: decor returns to its owners because it is a reusable kit. Coins buy decor (150), tools (600 or 2,000) or the next listing at the Coin Shop. 'Next house' is a deliberate press, with no auto-start and no countdown."
+  ],
+  "round_length_minutes": 4,
+  "jobs": [
+   {
+    "name": "Smash the Junk (Tier 1+)",
+    "interaction": "ProximityPrompt 'Bonk' (HoldDuration 0, MaxActivationDistance 8, RequiresLineOfSight false). Each press is 1 hit times tool power, and the server accepts at most 1 hit per 0.25 s per player. A pile of 4 small Parts has Work 4. Each accepted hit unanchors one cube with a small impulse and a squash tween, and the last hit flings the rest. Tier 1: 3 piles, Tier 2: 4, Tier 3: 5.",
+    "seconds": 15,
+    "coop_bonus": "Hits from several players stack on the same pile. Two players bonking within 0.5 s of each other show a 'COMBO' billboard (cosmetic only, logged as a TeamMove custom-field value)."
+   },
+   {
+    "name": "Fix the Leaky Pipe (Tier 1+, kitchen sink)",
+    "interaction": "Prompt 'Fix pipe' (HoldDuration 0, MaxActivationDistance 8) opens a ScreenGui timing bar with a needle sweeping on a 1.2 s cycle. The server stores the sweep start time and judges each PipePress() by server arrival time with 150 ms tolerance. The green zone starts at 25% (40% in the FTUE) and widens by 10 points after each miss. 3 successes finish the job (Work 3). A miss plays a screen splash and water ParticleEmitter with no other penalty. Tries are logged as a custom field.",
+    "seconds": 10,
+    "coop_bonus": "Hold It!: a second crew member holding the 'Hold pipe' prompt (HoldDuration loops while the bar is open, 6 studs or less) doubles the green zone."
+   },
+   {
+    "name": "Patch Wall Holes (Tier 1+)",
+    "interaction": "Prompt 'Patch' (HoldDuration 1.0, MaxActivationDistance 8) on a dark recessed Part, Work 3. On completion the Part fills flush and takes on the wall color. Tier 1: 2, Tier 2: 3, Tier 3: 4.",
+    "seconds": 12,
+    "coop_bonus": "Work stacks, and the holes sit on different walls so arrows spread the crew."
+   },
+   {
+    "name": "Replace Window Panes (Tier 1+)",
+    "interaction": "Prompt 'Fix window' (HoldDuration 1.0) on a cracked semi-transparent Part, Work 2. On completion it becomes Transparency 0.6 and light blue. Tier 1: 2, Tier 2: 3, Tier 3: 4.",
+    "seconds": 10,
+    "coop_bonus": "Work stacks; the windows face outward, so one player can work outside while another works inside."
+   },
+   {
+    "name": "Paint Walls (Tier 2+)",
+    "interaction": "Prompt 'Paint' (HoldDuration 1.0) on a stained panel, Work 3. The panel recolors in 3 steps toward the house paint color, which is cosmetic and not a price input. One color per house, never freehand. Tier 2: 4 panels, Tier 3: 6.",
+    "seconds": 25,
+    "coop_bonus": "Work stacks, and two painters visibly double the speed."
+   },
+   {
+    "name": "Haul Old Couch (Tier 2+, two-handed)",
+    "interaction": "A couch block with 'Lift Left' and 'Lift Right' prompts (HoldDuration 1.5, opposite ends). When the server receives both from two different crew members within 5 s, the couch tweens to the dumpster. 'Drag Solo' (HoldDuration 6.0) is the solo path. Work 3.",
+    "seconds": 8,
+    "coop_bonus": "About 2 s with two lifters instead of 6 s solo, plus a 'Teamwork' sparkle. Never required."
+   },
+   {
+    "name": "Shoo the Raccoon (Tier 2+, first to cut if behind schedule)",
+    "interaction": "A part-built raccoon (body, mask-stripe head, ringed tail) hides at 1 of 4 junk spots in the open garage area. Prompt 'Shoo' (HoldDuration 0) makes it tween-hop to a server-chosen other spot. On the 3rd shoo it waves and rolls away on a part-built tiny bike. Work 3. There is no hitting, catching or harm.",
+    "seconds": 15,
+    "coop_bonus": "Pincer: if another crew member stands within 4 studs of a different hiding spot, one shoo finishes the job with a wheelie exit."
+   },
+   {
+    "name": "Fix Porch Boards (Tier 3)",
+    "interaction": "Prompt 'Hammer' (HoldDuration 1.0) on 4 tilted porch boards, Work 3 each. They snap level on completion. This is an exterior job.",
+    "seconds": 20,
+    "coop_bonus": "Work stacks, and the boards sit in a row so two players work from opposite ends."
+   },
+   {
+    "name": "Stage the House (all tiers)",
+    "interaction": "Prompt 'Stage' (HoldDuration 0) on a glowing pad opens the decor picker. RemoteEvent StageDecor(slotId: string, decorId: string) gets type and length checks, a per-player rate limit and an ownership check. The server places a primitive (slab rug, cylinder lamp, sphere-on-cylinder plant, block chair, plate wall art) colored by style. Tier 1: 3 pads, Tier 2: 4, Tier 3: 5.",
+    "seconds": 25,
+    "coop_bonus": "Any crew member can stage from their own inventory (decor is lent and returned after the sale), so a crew reaches a perfect match sooner. The owner can clear any pad."
+   },
+   {
+    "name": "Sell (all tiers)",
+    "interaction": "A For Sale sign in the yard shows the live server-computed estimate and a 'Why this price' breakdown on a BillboardGui. Owner only: prompt 'Sell' (HoldDuration 2.0). The server computes, pays, saves and logs, then plays the reveal (12 s or less) and shows the summary card.",
+    "seconds": 5,
+    "coop_bonus": "The estimate includes the crew multiplier (up to +15%), and every contributing helper's Crew Pay appears on the same card."
+   }
+  ],
+  "sale_formula": "Pure function in src/shared/SaleFormula.luau. It is deterministic and takes no client inputs.\n\nP = max( B_t + round(0.10*V_t), round( V_t * (0.4 + 0.6*C) * (1 + 0.3*S) * (1 + 0.05*(n-1)) ) )\n\nTerms:\n- V_t is the tier value: T1 Starter Shack 250, T2 Cozy Cottage 600, T3 Family Bungalow 1,400.\n- B_t = 0.4*V_t: 100, 240 and 560. The first Shack is free.\n- C = accepted Work / total Work over all spots. Totals: T1 = 3x4 + 3 + 2x3 + 2x2 = 25. T2 = 4x4 + 3 + 3x3 + 3x2 + 4x3 + 3 + 3 = 52. T3 = 5x4 + 3 + 4x3 + 4x2 + 6x3 + 3 + 3 + 4x3 = 79. Sell needs C >= 0.5, or C = 1 on the first Shack.\n- S = clamp( sum over pads of taste_i / (2*K_t), -0.5, 1 ). taste is Love +2, Like +1, Neutral 0, Dislike -1, and an empty pad scores 0. K_t is 3, 4 or 5.\n- n is the number of contributors (1-4): crew with at least one accepted hit, or one staged piece, on this house. The crew multiplier is at most 1.15.\n- round(x) = math.floor(x + 0.5).\n\nDream Home tip: Tip = round(0.10*V_t) when C = 1 and S = 1, otherwise 0. Total = P + Tip.\n\nPayout:\n- The owner receives Total.\n- Each other contributor receives Crew Pay = round(0.5*(Total - B_t)). This is newly minted and never taken from the owner, which is safe only because coins are never sold for Robux.\n- First flip of each UTC day: +25% coins on that player's own payout, shown as a 'Welcome back +25%' line. No streak and no countdown.\n\nBuyer reaction tier (for show only, not price):\n- S <= 0: polite head-scratch.\n- 0 < S < 0.5: nod.\n- S >= 0.5: happy jump.\n- Dream Home (C = 1 and S = 1): heart-eyes and a faint onto the lawn, then pops up.\n\nWorked examples, pinned in Lune specs:\n- Tier 1, C = 1, pads Love + Love + Like, so S = 5/6. Solo: 250 x 1.0 x 1.25 = 312.5, so P = 313, profit 213.\n- The same house with 2 contributors: 250 x 1.25 x 1.05 = 328.1, so P = 328, and the helper gets round(0.5 x 228) = 114.\n- Dream Home on Tier 1 (3 Loves, C = 1): 250 x 1.3 = 325, plus a tip of 25, Total 350.\n- Worst case (C = 0.5, S = -0.5): 250 x 0.7 x 0.85 = 148.75, so P = 149, which is above the floor of 125. No flip can lose coins.\n\nThe buyer is drawn on the server with Random.new() from a fixed pool of 8 and shown on the listing before purchase. No Robux path reaches coins, so this is not a paid random item, and a Lune test asserts the catalog has no devproducts and no coin grants.",
+  "coop_mechanics": [
+   "Crew = lot. 4 lots per server, each with an owner. The lot toggle is Open (default, so RFY strangers can co-op), Friends (server-side Player:IsFriendsWith inside pcall) or Solo. Join by holding 'Help this crew' (HoldDuration 0.5) on a lot sign. If a Roblox friend is on the server, an opt-in 'Join <friend>' icon prompt appears; there is no auto-join.",
+   "Chat-free coordination: a BillboardGui job board over the house shows each spot and its state, colored by the player who last hit it. A per-player 'next job' arrow points to the nearest spot nobody has hit in the last 3 s, so a crew spreads out with no talking.",
+   "Icon pings only (hammer, 'help', 'sell-ready'), shown for 5 s and rate-limited to 1 per 10 s. No typed text and no custom chat channel; TextChatService defaults are left untouched.",
+   "Stacking work on every spot, plus light Team Moves: Combo Bonk, Hold It! on the pipe, Two-hand couch and Pincer on the raccoon. Each has a solo path, and none is required.",
+   "Shared staging from each member's own inventory. Decor is lent, never transferred, and returns after the sale. Trading is impossible.",
+   "Rewards: price multiplier 1 + 0.05*(n-1) up to +15%, and Crew Pay for each helper equal to 50% of the owner's profit, newly minted. The contributor rule is shown on the job board ('Do 1 job to get Crew Pay'). AFK players earn nothing, and nobody is shamed.",
+   "Anti-grief: work only moves forward, so nothing can be undone. Only the owner can buy or sell, helpers cannot spend the owner's coins, and the owner can clear any pad. Public servers fully support co-op, so private servers are never required, since some under-13s cannot join them."
+  ],
+  "solo_play": "Solo is the complete game. Every job has a solo path:\n- the pipe's green zone widens after each miss;\n- Drag Solo moves the couch in 6 s;\n- the raccoon leaves after 3 shoos.\nA solo Tier 1 flip takes about 2.5 min and Tier 2 about 4.5 min. One solo Tier 1 flip pays for at least one 150-coin decor piece. The crew multiplier is upside only, never a solo penalty. Coin tools (power 2 and 3) give solo players the same speed-up a friend would. Listings show the buyer before purchase, so solo players can pick houses that match the styles they own. Setting the lot to Open lets passing players help with no chat.",
+  "progression": [
+   "House tiers unlock by flips:\n- T1 Starter Shack is open from the start (V 250, B 100, Work 25, 3 pads).\n- T2 Cozy Cottage unlocks at 3 flips (V 600, B 240, Work 52, 4 pads; adds paint, couch and raccoon).\n- T3 Family Bungalow unlocks at 8 flips (V 1,400, B 560, Work 79, 5 pads; adds porch).\nLocked tiers show 'N flips to unlock' pips and no timers. Uses the existing ProfileLogic flipsCompleted and unlockedTier fields (default 1).",
+   "Coin-only tools change hits per spot, never price: Basic Toolbelt (power 1, free), Pro Toolbelt (power 2, 600 coins, after T2), Master Toolbelt (power 3, 2,000 coins, after T3). The pipe needs 3 successes regardless of tool.",
+   "Decor catalog: 4 styles (Cozy, Modern, Rustic, Bright) times 5 shapes = 20 pieces. A free starter kit (Cozy Rug, Cozy Lamp, Bright Plant, Modern Chair, Rustic Crate-chair). The other 15 cost 150 coins each and appear as a silhouette checklist with prices shown.",
+   "Buyer Book: 8 fixed buyers, each with a Love/Like/Dislike profile. An entry fills on the first sale to that buyer, and a Dream Home stamp (grafted album sticker) is earned with S = 1 and C = 1. Nothing expires or can be missed.",
+   "Personal-best sale price per tier on your own lot sign. No public leaderboard.",
+   "Planned pacing, to be checked in the playtest: first decor purchase right after flip 1; T2 at about 10 min; Pro Toolbelt at about 20-25 min; T3 at about 40-50 min; full catalog plus Master Toolbelt (4,850 coins of sinks) at about 90 min. This is deliberately thin for D7, and content updates extend it."
+  ],
+  "first_three_minutes": [
+   "Step 1 'Joined' (0:00): logged with LogOnboardingFunnelStepEvent after PlayerData.load succeeds. Spawn on your own empty lot with a pulsing arrow pointing at the Listing Board. 3 words of text at most. Starting coins: 0.",
+   "Step 2 'ArrivedAtLot' (about 0:05): within 15 studs of the board. A persistent highlight sits on the 'Starter Shack (free)' card, which shows Rosa's icons (Loves Cozy, Likes Bright, Dislikes Modern). After 8 s idle, a timed hint fires the HintShown custom event with the step in CustomField01.",
+   "Step 3 'ClaimedStarterShack' (about 0:15): hold to claim. The house pops in, C = 0%, and the arrow points at the first junk pile. No economy event is logged because the house is free.",
+   "Step 4 'FirstHit' (about 0:20): the first accepted bonk. A cube pops off, C ticks up and the sign estimate rises: cause and effect without reading.",
+   "Step 5 'FirstSpotDone' (about 0:30): the first pile is cleared, confetti fires and the arrow jumps to the next spot. Hint timers reset on every accepted hit.",
+   "Step 6 'FirstPipeFixed' (about 1:00): the arrows route junk, then pipe. The FTUE green zone is 40% and widens after each miss, so the third try is all but guaranteed. The first miss squirts the player, which is the signature joke inside the bounce window.",
+   "Step 7 'HouseRepaired' (about 1:30): C = 1.0. Pads light up and Rosa's card slides in with heart-on-Cozy.",
+   "Step 8 'FirstDecorStaged' (about 1:50): the first piece is placed from the picker and the estimate visibly jumps (or drops for Modern). Selling the Shack requires this step, so it cannot be skipped.",
+   "Step 9 'FirstSale' (about 2:30, including a reveal of 12 s or less): hold Sell. Tarp sweep, Rosa does a happy jump, and the card reads Base / Repairs / Staging / Total = 313 coins with 2 Cozy plus the Bright plant. Source/Gameplay is logged after the save succeeds. HouseFlip funnel step 5 also fires.",
+   "Step 10 'FirstShopPurchase' (about 2:50): the arrow points at the Coin Shop, which highlights the third Cozy piece with the caption 'Rosa-style buyers love this', 150 coins, button 'Buy'. Sink/Shop is logged with itemSku = decor id. The balance becomes 163.",
+   "Step 11 'SecondHouseBought' (about 3:15): the player deliberately presses 'Next house' and buys a 100-coin Starter Shack (balance 63). This is the instrumented 'one more house' moment, and it can now be a Dream Home with 3 Cozy pieces. After this, only contextual hints remain. Steps 1-11 are frozen in src/shared/Onboarding.luau and never renumbered."
+  ],
+  "retention_hooks": [
+   "Visible, finite goals with no clocks: tier-unlock pips, the 20-piece decor checklist and the 8-entry Buyer Book with Dream Home stamps.",
+   "Personal-best sale price per tier on your lot sign: come back to beat yourself with better staging.",
+   "The collection compounds: owned decor makes future perfect matches easier, so each session starts stronger than the last one ended.",
+   "Friends make it better: Crew Pay and up to +15% reward returning with a Roblox friend through normal joins and invites. Inviting is never rewarded. This feeds RFY's 'intentional co-play days' signal without pressure.",
+   "A gentle first-flip-of-the-day +25% coin line on the sale card. No streak, no countdown, no 'you missed' messaging.",
+   "Saved progress you can trust: session-locked UpdateAsync on every sale and purchase, every 180 s, on PlayerRemoving and in BindToClose.",
+   "A post-MVP content cadence every 2-4 weeks (1 buyer, 1 decor style or 1 job verb) and a new tier every 2-3 months, timed for weekends and holidays, plus Your Street as the ending system, as Roblox's D7/D30 guidance recommends."
+  ],
+  "monetization": [
+   {
+    "item": "All gameplay: houses, tier unlocks, tools, all 20 decor pieces, Buyer Book, coins",
+    "kind": "none",
+    "price_robux": 0,
+    "gameplay_effect": "Earned only through flips. Coins are never sold, and there are no developer products (ShopRules.validateCatalog rejects them).",
+    "why_fair_for_kids": "Nobody can pay to be faster, richer or luckier. Because no Robux path reaches coins, server-random buyer selection is not a paid random item under Roblox policy or Belgian, Dutch or Brazilian loot-box regimes."
+   },
+   {
+    "item": "Crew Hard Hats (5 hard-hat and vest color sets) - post-gate only",
+    "kind": "gamepass",
+    "price_robux": 79,
+    "gameplay_effect": "none (cosmetic only)",
+    "why_fair_for_kids": "Permanent, all contents listed, no random rolls and not tradable. A free yellow hat and 2 coin-earned colors fill the same slot (enforced by ShopRules.slotsWithoutEarnedOption). The button reads 'See price', and the price is fetched at runtime with MarketplaceService because regional pricing can be 30-100% of list."
+   },
+   {
+    "item": "Pastel Paint Pack (6 extra house paint colors) - post-gate only",
+    "kind": "gamepass",
+    "price_robux": 99,
+    "gameplay_effect": "none (paint color is not a sale-formula input, and a Lune test asserts this)",
+    "why_fair_for_kids": "6 coin-earned colors exist in the same slot. One-time purchase, no sale badge, no timer and no pushy copy (ShopRules.BANNED_PHRASES). Shown only when the player opens the shop; never auto-prompted."
+   },
+   {
+    "item": "Lot Mailbox & Flag Set (props on your own lot, not on staging pads) - post-gate only",
+    "kind": "gamepass",
+    "price_robux": 49,
+    "gameplay_effect": "none (it cannot touch S or P)",
+    "why_fair_for_kids": "A plain mailbox is free. Every item in the set is shown before purchase. Granted on the server through PromptGamePassPurchaseFinished plus a pcall'd UserOwnsGamePassAsync on join. The MVP ships with pass IDs 0 and no live products."
+   }
+  ],
+  "excluded_patterns": [
+   "Paid random items: mystery crates, capsules, gacha decor, 'surprise' bundle bonuses, luck or odds boosts (e.g. '2x Buyer Luck'), pity systems.",
+   "Selling coins or any currency, developer products or consumables, and gifting or player-to-player transfers.",
+   "Pay-to-win or pay-to-skip: instant repair, Robux tools, coin multipliers, early tier unlocks, extra listings, VIP areas.",
+   "Energy or stamina, cooldowns that money removes, and wait-to-play gates.",
+   "Countdown sales, 'limited time', 'only N left', permanent fake discounts, sale badges, 'Founders'/exclusive naming, and copy using 'now', 'hurry', 'only', 'just', 'last chance', 'best value', 'ask your parents' or '!'.",
+   "Login streaks that reset, escalating daily calendars, 'you'll lose X' or 'your crew misses you' messages, and auto-starting next rounds with a countdown.",
+   "Trading of any items.",
+   "Free-text input (house names, signs, descriptions), freehand painting, pixel canvases and multi-color wall patterns.",
+   "Private-space content: no bedrooms or bathrooms, no beds, toilets or tubs, no Seats in houses, no lockable doors, no small enclosed rooms.",
+   "Custom chat over RemoteEvents, and text presets in the MVP (icon pings only).",
+   "Rewarded, immersive or any other ads, ad-gated progress, and external links.",
+   "Public or spend-ranked leaderboards and visible 'payer' status markers.",
+   "Hard-coded Robux prices in UI.",
+   "Paid private servers as the only way to play with friends, and auto-joining players into crews.",
+   "Zero-amount or client-reported economy events, and granting purchases from PromptProductPurchaseFinished.",
+   "Imported assets in the graybox: no meshes, images or audio IDs. Feedback uses Parts, tweens, the built-in ParticleEmitter and GUI only.",
+   "Violence toward characters: bonking hits junk only, and the raccoon is never harmed. Target a Minimal maturity label.",
+   "'Hangout' or 'FREE MONEY' wording in the title and metadata."
+  ],
+  "mvp_scope": [
+   "1. Unblock the build: add src/client/Main.client.luau and src/server/Main.server.luau. `rojo build` currently fails because src/client does not exist. Wire the existing PlayerData, Policy (fail-closed cache) and Analytics adapters, set R15-only, and gate CI on `lune run tests/run.luau` plus `rojo build -o build/place.rbxlx`.",
+   "2. Pure shared modules with Lune specs (require './X' paths only): Houses (tier table, spots, Work totals 25/52/79, pads, unlock flips), SaleFormula (the 4 worked examples, no-loss floor, 1.15 cap, S clamp, tip boundary, paint not an input), JobLogic (Work, tool power, rate caps, 5 s two-hand window, timing-bar judge with 150 ms tolerance and zone widening), Staging, Buyers (8 profiles, reaction tier), Crew (contributors, Crew Pay), Onboarding (frozen steps 1-11), Catalog (validated by ShopRules).",
+   "3. Extend ProfileLogic with ownedDecor, ownedTools, buyerBook, bestPriceByTier and lastBonusDay, all reconciled and migrated, with specs for corrupt and missing fields.",
+   "4. Server LotBuilder: 4 lots and procedural open-plan houses for 3 tiers (about 40 Parts each, ModelStreamingMode Atomic), dirty-overlay tags, job spots with explicit prompt properties, pads, Listing Board and For Sale sign. The raccoon and couch are part-built.",
+   "5. Server JobService: one ProximityPromptService.PromptTriggered handler plus PipePress and StageDecor RemoteEvents. Checks distance, crew, state, ownership and RateLimiter, then updates C and the live price attribute. Clients request; they never report outcomes.",
+   "6. Sell, reveal and buyers: owner-only Sell, then server payout, session-locked save, then economy logging. A reveal of 12 s or less (camera tween, overlay sweep, confetti, part-built buyer with 4 tweened reaction tiers), a summary card and a deliberate 'Next house' press.",
+   "7. Listing Board (2 listings per unlocked tier, server-drawn buyer from 8) and Coin Shop (2 tools, 15 decor at 150). No Robux products; pass IDs stay 0.",
+   "8. Minimal client UI built with WaitForChild and server-sent ids: coins, condition bar, job board, next-job arrow, buyer card, decor picker with taste badges, 'Why this price' breakdown, Open/Friends/Solo toggle, icon pings. Keyboard, touch and gamepad for every job.",
+   "9. Instrumentation: onboarding steps 1-11. Funnels 'HouseFlip' (Bought, FirstSpotDone, Repaired, Staged, Sold; session id '<ownerUserId>-<flipNumber>') and 'Crew' (SignOpen, HelperJoined, TeamMoveDone, SoldTogether), 2 of the 10 allowed. A single 'Coins' economy currency logged after the server succeeds. 9 custom events: CrewJoined, HintShown, PingSent, TeamMove, PipeTries, StagingScore (S x 100), HitsPerHouse (batched at sale), SessionMinutes, ReturnVisitDay.",
+   "10. Safety and release checklist: default TextChatService, no free text, a separate test universe for Studio data-store access, a private test place verified with View Events, founder ID verification and 2FA, and the full maturity questionnaire (target Minimal) before any public test."
+  ],
+  "playtest_metrics": [
+   {
+    "metric": "Early bounce: share of new joiners who reach onboarding step 3 'ClaimedStarterShack' (about 15 s), and step 6 'FirstPipeFixed' (about 60 s)",
+    "threshold": ">= 85% reach step 3 and >= 75% reach step 6; below 70% at step 3 means fix before further testing. Judgment call: Roblox publishes no numeric bounce bar.",
+    "why": "First-play bounce under 60 s and at 61-180 s is a top-tier negative RFY signal (official). Step 3 is the first commitment, and step 6 tests whether the first joke lands inside the 60 s window."
+   },
+   {
+    "metric": "First-flip completion: step 9 'FirstSale' among joiners who reached step 2, and time to step 9",
+    "threshold": ">= 70% reach it, median time 3:00 or less, P90 5:00 or less",
+    "why": "Roblox's retention guidance (official) says to get players to the fun ideally within 5 minutes. P90 5:00 or less applies that guidance directly; the 70% and median bars are judgment calls."
+   },
+   {
+    "metric": "Per-step drop-off and hint rate (onboarding steps 2-11)",
+    "threshold": "No step loses more than 15% of the previous step, and HintShown fires for fewer than 30% of players at any step. Judgment call.",
+    "why": "Roblox's onboarding docs (official) say to track every FTUE step and fix big drop-offs. A step where most players need a timed hint is confusing, not just slow."
+   },
+   {
+    "metric": "'One more house': step 11 'SecondHouseBought' among step-9 players",
+    "threshold": ">= 60% (>= 50% of all joiners). Judgment call.",
+    "why": "A deliberate repeat with the player's own coins is the strongest first-session signal that the loop is fun rather than tutorial-driven."
+   },
+   {
+    "metric": "Reveal payoff: share of sales where the owner leaves during the reveal (custom field on the Sold funnel step), and reveal length",
+    "threshold": "<= 3% of reveals, and the reveal runs 12 s or less. Judgment call.",
+    "why": "The reveal is the grafted payoff beat. If players leave during it, it is too long or not paying off."
+   },
+   {
+    "metric": "Pipe feel: PipeTries distribution and job abandonment per job type (spot started by a player who never contributed again before sale)",
+    "threshold": "First-try success 40-70% outside the FTUE; abandonment 10% or less per job type; any job above 15% gets redesigned. Judgment call.",
+    "why": "The only skill job must be neither trivial nor frustrating for young players, and every job must feel good on its own."
+   },
+   {
+    "metric": "Staging lift and taste learning: median P with S >= 0.5 vs S <= 0; change in median S from flip 1 to flip 3 (StagingScore)",
+    "threshold": "Staged sales >= 15% higher; >= 60% of sales with S >= 0.5; median S rises >= 0.15 by flip 3. Judgment call.",
+    "why": "The visible-buyer staging puzzle is the differentiator from Flip a House! and Renovate A House (both verified direct competitors). If players ignore it, the game is a reskin in a niche Roblox de-prioritizes for lookalikes."
+   },
+   {
+    "metric": "Average session length (Roblox definition: total playtime / sessions, from SessionMinutes)",
+    "threshold": ">= 12 min pass, >= 15 min strong, < 7 min stop. Judgment call anchored on secondary data.",
+    "why": "GameAnalytics 2025 (secondary) puts platform P50 at about 6.6 min and P75 at about 14.5 min, with higher D1 in 13-25 min session buckets. Roblox publishes no official number below 100 DAU."
+   },
+   {
+    "metric": "D1 retention (new-user cohort returning the next UTC day; ReturnVisitDay proxy until Creator Hub unlocks at >10 DAU for 7 days)",
+    "threshold": ">= 10% pass, >= 15% strong, < 6% stop. Judge only cohorts of 300 or more, and state the cohort source (RFY, ads, friends). Judgment call.",
+    "why": "GameAnalytics (secondary, undefined denominator) shows a median D1 of about 10% and P90 about 15% for 13-18 min session games. The 20-25% DevForum figure is unverified. Recalibrate against the official Genre benchmark at 100+ DAU."
+   },
+   {
+    "metric": "D7 retention (same cohort definition; only cohorts acquired in the first 3 weeks)",
+    "threshold": ">= 2.5% pass; < 1% means add progression content before scaling. Judgment call.",
+    "why": "GameAnalytics (secondary) shows a D7 median of about 1.2-1.8% and P90 of about 2.7-5.9%. Roblox (official) ties D7 to progression depth, and RFY weights day 2-7 and day 8-28 signals."
+   },
+   {
+    "metric": "D8-28 activity among D1 returners",
+    "threshold": ">= 25% play again on any day 8-28. Judgment call.",
+    "why": "RFY now uses a 28-day window (official, June 2026), and the Discovery FAQ says a strong D8-28 signal is unlikely if D1 and D2-7 are poor."
+   },
+   {
+    "metric": "Co-op uptake and lift (Crew funnel, CrewJoined)",
+    "threshold": ">= 20% of sessions over 10 min include a crew job with another player; crew players' D1 >= 1.2x solo-only D1. Judgment call.",
+    "why": "'Intentional co-play days' is an official RFY signal and co-op is in the pitch. Without uptake or lift, co-op is cost with no return."
+   },
+   {
+    "metric": "Solo health",
+    "threshold": "Solo-only first-flip completion within 5 points of crew players; solo median session >= 80% of crew. Judgment call.",
+    "why": "Most RFY arrivals come alone, and RFY ranking counts only RFY-sourced users (official), so the solo path decides ranking."
+   },
+   {
+    "metric": "Integrity and stability",
+    "threshold": "Profile save failures < 0.5% of saves; 0 duplicate grants; rejected-hit rate < 2% for normal players; 0 unhandled server errors per 100 sessions; 0 job soft-locks in 20 consecutive test flips; Lune CI green. Judgment call.",
+    "why": "Roblox (official) advises monitoring errors and crashes on every update. A spike in rejected hits means either exploiters or validation strict enough to frustrate laggy kids."
+   },
+   {
+    "metric": "Laugh check (moderated sessions with 16+ testers, and kids only via family or Trusted Friends with parental approval)",
+    "threshold": ">= 60% of testers name a specific funny moment unprompted (pipe squirt, raccoon bike, buyer faint). Judgment call.",
+    "why": "Funnels can't measure delight, and the graybox removes audio, so this checks whether the grafted jokes survive without sound."
+   }
+  ],
+  "risks": [
+   "Roblox code status: no gameplay code exists. The repo has only infrastructure (ProfileLogic, ShopRules, RateLimiter, Analytics, Policy, PlayerData) and 24 passing Lune tests, and `rojo build` fails today because src/client is missing (verified 2026-10-17). The schedule starts from zero gameplay; MVP item 1 comes first.",
+   "Crowded, trend-driven niche: Flip a House! (25.5M visits, identical 'up to 4 friends' loop), Renovate A House (about 10K CCU) and a wave of late followers that got almost nothing. Roblox de-prioritizes lookalike metadata and place files. The visible-buyer staging puzzle, the reveal and fair monetization must lead the title, icon and first 30 s.",
+   "Graybox fun deficit: holds and primitives with no audio may undersell the feel. The grafted pipe, bonk, raccoon and reveal beats are the mitigation; if the laugh check fails, add juice before adding content.",
+   "Kid audience is gated: under-16s are reachable only after 250 highly engaged, age-checked 16+ plays within 60 days, plus ID verification, 2FA, a full questionnaire and a 1,000 Robux refundable fee or 2 months of Plus. Early metrics come from 16+ players, and pre-release under-13 testing is effectively impossible.",
+   "Thin content: about 90 min of progression covers D1 but probably not D7 or D8-28. A 2-4 week solo update cadence competes with the founder's other business candidates.",
+   "Revenue ceiling: cosmetic-only, post-gate passes (49-99 Robux) plus falling younger-cohort monetization (Q2 2026 letter) mean very low ARPDAU. Creator Rewards are a secondary stream. The MVP itself earns nothing by design.",
+   "Default Open lots invite mild stranger griefing (wrong-style staging). Mitigated by owner-only sell, owner pad clearing, forward-only work and non-consumed decor. Measure in playtests, with Friends as the fallback default.",
+   "Server-validation tuning: the 0.25 s bonk cap, 0.8-1 s holds, 12-stud tolerance, 150 ms timing tolerance and 5 s two-hand window are guesses. Too strict frustrates laggy mobile kids; too loose speeds up exploiters. Impact is limited because coins cannot be bought or traded.",
+   "Undocumented engine details: ProximityPrompt defaults are undocumented, so they are set explicitly. Require-by-string parity is verified only on the Lune side. Rojo live-sync of StreamingEnabled is unverified, so use `rojo build` for the place file.",
+   "Analytics blind spots: events only fire in published games, charts lag about 24 h, dashboards need >10 DAU for 7 days, and benchmarks need 100+ DAU. Decisions rely on ReturnVisitDay and small samples, hence the cohort minimums.",
+   "Policy drift: highly engaged player thresholds and fees changed twice in 2026, an IARC transition is pending, and loot-box bills are pending. Re-check Kids/Select requirements and re-take the questionnaire on every feature change, and keep gating in the single Policy module."
+  ],
+  "deferred": [
+   "All three Robux game passes and the client price fetch, built only after the first-flip and D1 gates pass and after ID verification, 2FA and the questionnaire.",
+   "Your Street (sold houses on a persistent row) and Block Party as the ending system.",
+   "Robo-Buddy solo helper, Team Moves on every job, and continuous scrub, mow and paint-strip jobs with client prediction.",
+   "Daily seeded listings with a Practice House, rested-Reputation catch-up, and weekly Block Themes with no exclusive rewards.",
+   "Showcases and anonymous icon stickers (need IsContentSharingAllowed and a Media declaration), crew photos and share features.",
+   "Friend-pair Crew Milestones (storing friend userIds needs a data-handling review first).",
+   "Multiple walk-in buyers per house with an offer choice, and a 'Why this price' comparison across three buyers.",
+   "Built-in Quick Words or 12 or fewer compliant preset callouts.",
+   "Roof, window-swap, porch-beam carry and pipe-puzzle jobs, Tier 4+ houses, and upstairs rooms (any bed or bath props stay non-interactive).",
+   "Audio and an art pass on thumbnail-visible elements before relying on organic RFY play-through.",
+   "Experiments A/B tests (hint delay 5 s vs 8 s, Open vs Friends default) and an Ads Manager Engagement-objective budget for the 250 highly engaged player threshold."
+  ]
+ }
+}

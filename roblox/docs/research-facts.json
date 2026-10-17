@@ -1,0 +1,1007 @@
+{
+ "research:apis": {
+  "facts": [
+   {
+    "topic": "AnalyticsService - methods that exist today",
+    "claim": "Current, non-deprecated AnalyticsService methods are: LogOnboardingFunnelStepEvent, LogFunnelStepEvent, LogEconomyEvent, LogCustomEvent, LogProgressionEvent, LogProgressionStartEvent, LogProgressionCompleteEvent, LogProgressionFailEvent, LogJourneyEvent and GetPlayerSegmentsAsync. FireEvent, FireCustomEvent, FireInGameEconomyEvent, FireLogEvent and FirePlayerProgressionEvent are tagged Deprecated.",
+    "url": "https://create.roblox.com/docs/reference/engine/classes/AnalyticsService",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "This function has been deprecated in favor of more descriptive methods, including `Class.AnalyticsService:LogCustomEvent()`",
+    "implication": "Use only the Log* methods. Never use the Fire* methods."
+   },
+   {
+    "topic": "AnalyticsService:LogOnboardingFunnelStepEvent",
+    "claim": "Signature: LogOnboardingFunnelStepEvent(player: Player, step: number, stepName: string, customFields: Dictionary = nil): (). Steps are limited to 1-100. Skipped steps count as completed. It takes no funnelSessionId, so it suits a one-time funnel.",
+    "url": "https://create.roblox.com/docs/reference/engine/classes/AnalyticsService",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "All funnels start at step 1. Limited to steps 1-100. Note that if any steps are skipped, the intermediate steps will be considered completed.",
+    "implication": "Number the FTUE steps 1..N, with step 1 logged on PlayerAdded, for example join, buy the first house, finish the first repair job, stage, first sale. Do not renumber steps later, because the dashboard warns when a date range spans a step change."
+   },
+   {
+    "topic": "AnalyticsService:LogFunnelStepEvent",
+    "claim": "Signature: LogFunnelStepEvent(player: Player, funnelName: string, funnelSessionId: string, step: number = 1, stepName: string, customFields: Dictionary = nil): (). An experience can have up to 10 unique funnels. Repeated steps in the same session, or calls with a nil funnelSessionId, are ignored but still count toward the rate limit. Only the user's 10 most recent funnelSessionIds per funnel are tracked.",
+    "url": "https://create.roblox.com/docs/production/analytics/funnel-events",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "Repeated steps are ignored by the funnel, but they're still logged and contribute towards the global rate limit.",
+    "implication": "A recurring flip-cycle funnel (buy, repair, stage, sell) should use a funnelSessionId per house, such as HttpService:GenerateGUID() or `<userId>-<houseId>`. Stay within 10 funnels in total."
+   },
+   {
+    "topic": "AnalyticsService:LogEconomyEvent and enums",
+    "claim": "Signature: LogEconomyEvent(player: Player, flowType: Enum.AnalyticsEconomyFlowType, currencyType: string, amount: number, endingBalance: number, transactionType: string, itemSku: string, customFields: Dictionary = nil): (). AnalyticsEconomyFlowType has Sink=0 and Source=1. AnalyticsEconomyTransactionType has IAP, Shop, Gameplay, ContextualPurchase, TimedReward and Onboarding, and you pass the `.Name` string. The amount must always be positive. endingBalance must be >= 0. The reference page limits currencyType to 5 unique values, transactionType to 20 and itemSku to 100.",
+    "url": "https://create.roblox.com/docs/reference/engine/classes/AnalyticsService",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "Because this field type is a string, you'll need to pass the `Name` value of the enum.",
+    "implication": "Coins earned from a sale are Source/Gameplay. Tools or decor bought with coins are Sink/Shop with itemSku = the item id. Use a single 'Coins' currency. Log only after the server-side transaction succeeds."
+   },
+   {
+    "topic": "AnalyticsService:LogCustomEvent",
+    "claim": "Signature: LogCustomEvent(player: Player, eventName: string, value: number = 1, customFields: Dictionary = nil): (). An experience can have up to 100 eventNames. Events can be sent only from the server, and only in published games.",
+    "url": "https://create.roblox.com/docs/production/analytics/custom-events",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "Events can only be sent from the server and in published games. Events can't be sent from the client or Studio.",
+    "implication": "Analytics calls cannot be verified in Studio. Wrap them in a server-side analytics adapter that can be stubbed in Lune tests. In a published test place, use the 'View Events' tool. Charts take about 24 hours to appear."
+   },
+   {
+    "topic": "AnalyticsService:LogProgressionEvent family",
+    "claim": "Signature: LogProgressionEvent(player: Player, progressionPathName: string, status: Enum.AnalyticsProgressionType, level: number, levelName: string, customFields: Dictionary = nil): (). AnalyticsProgressionType has Custom=0, Start=1, Fail=2 and Complete=3. The Start, Complete and Fail methods are shortcuts with the same parameters minus status. progressionPathName cannot be empty and cannot contain commas, quotes or newlines.",
+    "url": "https://create.roblox.com/docs/reference/engine/classes/AnalyticsService",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "This event does not currently display in any Roblox-provided charts.",
+    "implication": "Progression events do not appear on any built-in dashboard today. Measure house-tier progression with funnel or custom events instead, or log progression events only as cheap future-proofing."
+   },
+   {
+    "topic": "AnalyticsService - rate and cardinality limits",
+    "claim": "The global rate limit is 120 + (20 \u00d7 CCU) AnalyticsService requests per minute. Up to 3 custom fields are allowed, keyed by Enum.AnalyticsCustomFieldKeys.CustomField01/02/03.Name. Past 8,000 combined values they are grouped as 'Other'. Limits reset daily, and data rolls off 90 days after the last data received.",
+    "url": "https://create.roblox.com/docs/production/analytics/event-types",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "Total `Class.AnalyticsService` requests per minute | 120 + (20 * CCU)",
+    "implication": "With 4 players per server, keep the volume of events per minute low. Batch with values, for example log jobs completed per house rather than every hammer swing."
+   },
+   {
+    "topic": "Economy currency limit discrepancy",
+    "claim": "The event-types limitations table lists 'Resource types' as 10, but the LogEconomyEvent reference says 'Limited to 5 unique currency types per experience', and the economy-events guide says 'You can add up to five currencies'.",
+    "url": "https://create.roblox.com/docs/production/analytics/economy-events",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "You can add up to five currencies of resources",
+    "implication": "Plan for 5 or fewer. The design uses only 1 to 2 (Coins, possibly Reputation), so this is not a blocker."
+   },
+   {
+    "topic": "Built-in retention (D1/D7/D30)",
+    "claim": "Creator Hub Analytics includes a Retention dashboard with D1, D7 and D30 cohort charts and daily and weekly cohort tables. No AnalyticsService instrumentation is described for it. Access to all dashboard KPIs requires more than 10 DAU and 10 play hours for 7 consecutive days, plus enrollment that needs a verified email, 2-step verification and acceptance of the Terms.",
+    "url": "https://create.roblox.com/docs/production/analytics/analytics-dashboard",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "Any game with more than 10 daily active users (DAU) and 10 play hours for 7 consecutive days is eligible for accessing all KPIs on the dashboard.",
+    "implication": "A founder with no audience may not see retention KPIs until the game sustains more than 10 DAU for a week. Log your own D1/D7 proxy, such as a 'ReturnVisit' custom event with days since first join, from DataStore first-seen timestamps."
+   },
+   {
+    "topic": "MarketplaceService.ProcessReceipt contract",
+    "claim": "Callback: ProcessReceipt(receiptInfo: Dictionary) -> Enum.ProductPurchaseDecision (NotProcessedYet=0, PurchaseGranted=1). Set it once, in one server Script. receiptInfo contains PurchaseId, PlayerId, ProductId, PlaceIdWherePurchased, CurrencySpent, CurrencyType and ProductPurchaseChannel. It is called for unresolved purchases when a purchase completes, when a successful prompt appears and when the user joins a server.",
+    "url": "https://create.roblox.com/docs/reference/engine/classes/MarketplaceService",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "You should only set the `ProcessReceipt` callback one time in a single server-side `Class.Script|Script`.",
+    "implication": "Put a single receipt router in ServerScriptService that maps ProductId to a non-yielding grant function."
+   },
+   {
+    "topic": "ProcessReceipt retries, timeouts and gotchas",
+    "claim": "There is no time-based retry. NotProcessedYet is retried only on the user's next purchase or their next join. There is no timeout. Without a callback, receipts are auto-acknowledged. Pending receipts run in non-deterministic order. The same receipt can run on two servers at once. PurchaseGranted can still fail to be recorded on the backend.",
+    "url": "https://create.roblox.com/docs/reference/engine/classes/MarketplaceService",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "`ProcessReceipt` has no time-based retry mechanism.",
+    "implication": "Grants must be idempotent and keyed on PurchaseId. Never grant from PromptProductPurchaseFinished."
+   },
+   {
+    "topic": "ProcessReceipt idempotency guidance",
+    "claim": "The official sample records each PurchaseId in a 'PurchaseHistory' data store with UpdateAsync. It returns early when the purchase was already granted, returns nil (cancelling the write) when the player is absent, and runs non-yielding grant handlers inside the UpdateAsync transform. The docs state that duplicate grants remain possible across servers without session locking.",
+    "url": "https://create.roblox.com/docs/reference/engine/classes/MarketplaceService",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "you'll need a session locking implementation around your data store to avoid the potential of duplicate grants across servers.",
+    "implication": "Store processed PurchaseIds inside the session-locked player profile and return PurchaseGranted only after it is saved, as in the player-data-purchasing guide. The prototype may ship with no paid products at all, which avoids this risk."
+   },
+   {
+    "topic": "MarketplaceService:BindReceiptHandler (new alternative)",
+    "claim": "BindReceiptHandler(transactionType: Enum.ReceiptType, handler: Function, filter: Array?): RBXScriptConnection. The handler returns Enum.ReceiptDecision (Processed or NotProcessedYet). A bound handler takes precedence and falls through to ProcessReceipt. It throws if a duplicate handler or catch-all is registered for the same type and product.",
+    "url": "https://create.roblox.com/docs/reference/engine/classes/MarketplaceService",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "For developer products, `BindReceiptHandler` is an alternative to the legacy `Class.MarketplaceService.ProcessReceipt|ProcessReceipt` callback.",
+    "implication": "Either API works. ProcessReceipt is now described as 'legacy'. Choose one per product to avoid confusion."
+   },
+   {
+    "topic": "MarketplaceService:PromptProductPurchase",
+    "claim": "Signature: PromptProductPurchase(player: Instance, productId: int64, equipIfPurchased: boolean = true, currencyType: Enum.CurrencyType = Default): (). The last two parameters are 'Ignored'. Do not use PromptProductPurchaseFinished to grant.",
+    "url": "https://create.roblox.com/docs/reference/engine/classes/MarketplaceService",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "The firing of `PromptProductPurchaseFinished` does **not** mean that a user has successfully purchased an item.",
+    "implication": "Prompts are UX only. All granting goes through the receipt handler."
+   },
+   {
+    "topic": "MarketplaceService:PromptGamePassPurchase / UserOwnsGamePassAsync / PromptGamePassPurchaseFinished",
+    "claim": "PromptGamePassPurchase(player: Instance, gamePassId: int64): (), where gamePassId is the pass ID, not its asset ID or ProductId. UserOwnsGamePassAsync(userId, gamePassId): boolean yields, is cached, works on client and server, and its cache updates when PromptGamePassPurchaseFinished fires. PromptGamePassPurchaseFinished(player: Instance, gamePassId: int64, wasPurchased: boolean) should be listened to only on the server.",
+    "url": "https://create.roblox.com/docs/reference/engine/classes/MarketplaceService",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "`PromptGamePassPurchaseFinished` should only be listened to in a server script.",
+    "implication": "For a cosmetic or convenience pass, check UserOwnsGamePassAsync on PlayerAdded (pcall) and grant on the server-side PromptGamePassPurchaseFinished. Passes can also be bought outside the game, so always check on join."
+   },
+   {
+    "topic": "PolicyService:GetPolicyInfoForPlayerAsync",
+    "claim": "GetPolicyInfoForPlayerAsync(player: Instance): Dictionary yields and must be pcall-wrapped. Fields: AreAdsAllowed, ArePaidRandomItemsRestricted, IsContentSharingAllowed, IsEligibleToPurchaseCommerceProduct, IsEligibleToPurchaseSubscription, IsPaidItemTradingAllowed, IsPhotoToAvatarAllowed, IsSubjectToChinaPolicies, AllowedExternalLinkReferences (legacy, always an empty array), IsEndlessContentLoadAllowed and IsEndlessContentAutoplayAllowed. It errors if called more than 100 times before an HTTP response returns, and it cannot be called on the client for a non-local player.",
+    "url": "https://create.roblox.com/docs/reference/engine/classes/PolicyService",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "This is a legacy field. It always returns an empty array.",
+    "implication": "The design has no paid random items and no trading, so these flags mostly do not gate anything. Still call it once per player on the server, cache the result and fail closed (treat flags as restrictive on error). Do not rely on AllowedExternalLinkReferences."
+   },
+   {
+    "topic": "DataStoreService:GetDataStore",
+    "claim": "Signature: GetDataStore(name: string, scope: string = 'global', options: DataStoreOptions = nil): DataStore. It is server-only. Studio cannot access data stores unless 'Enable Studio Access to API Services' is on, and Studio then reads and writes the same stores as live.",
+    "url": "https://create.roblox.com/docs/cloud-services/data-stores",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "To avoid overwriting production data, do not enable this setting for live games. Instead, enable it for a separate test version of the game.",
+    "implication": "Use a separate test place or universe for Studio testing. Version the store name, for example 'PlayerData_v1'."
+   },
+   {
+    "topic": "UpdateAsync vs SetAsync",
+    "claim": "SetAsync(key, value, userIds = {}, options = nil) overwrites and risks inconsistency when servers race. UpdateAsync(key, transformFunction) reads then writes, re-runs the transform on conflict, cancels when the transform returns nil, must not yield, and counts against both the read and write budgets. Transforms should return keyInfo:GetUserIds() and GetMetadata() or that data is cleared.",
+    "url": "https://create.roblox.com/docs/reference/engine/classes/GlobalDataStore",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "The callback function cannot yield, so do **not** include calls like `Library.task.wait()`.",
+    "implication": "Use UpdateAsync for all player-profile writes. Keep transform functions pure, which lets them be unit-tested in Lune."
+   },
+   {
+    "topic": "Data store limits",
+    "claim": "The value limit is 4,194,304 characters per key. Name, key and scope are each limited to 50 characters. Per-key throughput is 25 MB/min read and 4 MB/min write. Default per-server budgets: StandardRead and StandardWrite are 60 + numPlayers \u00d7 40 per minute, StandardList is 5 + numPlayers \u00d7 2. Experience-wide limits: read 300 + CCU \u00d7 40, write 300 + CCU \u00d7 20. Storage is 500 MB + 1 MB \u00d7 lifetime users. Each throttle queue holds 30 requests.",
+    "url": "https://create.roblox.com/docs/cloud-services/data-stores/error-codes-and-limits",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "Each queue has a limit of 30 requests.",
+    "implication": "A 4-player server gets about 220 reads and writes per minute, which is plenty for an autosave every 180 s plus saves on leave and purchase. Check GetRequestBudgetForRequestType before bursts."
+   },
+   {
+    "topic": "Session locking and save cadence",
+    "claim": "Official guidance: keep a server-local copy and save periodically, on PlayerRemoving, in BindToClose (30 s to finish) and at purchase checkpoints. Use an interval shorter than the session-lock expiry (the sample uses 180 s). Session-lock by writing a LockId into key metadata inside UpdateAsync. Retry transient failures with exponential backoff plus jitter.",
+    "url": "https://create.roblox.com/docs/cloud-services/data-stores/player-data-purchasing",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "the server atomically writes a lock to the key's metadata inside the same `Class.GlobalDataStore:UpdateAsync()|UpdateAsync()` call.",
+    "implication": "Implement the lock and merge logic as pure functions (current value plus metadata in, new value plus metadata out) that can be tested in Lune. Keep the Roblox I/O wrapper thin."
+   },
+   {
+    "topic": "ProximityPrompt",
+    "claim": "Properties: HoldDuration (float, seconds; 0 triggers immediately), MaxActivationDistance (float), RequiresLineOfSight (default true per the guide), KeyboardKeyCode (default E), GamepadKeyCode (default ButtonX). Events: Triggered(playerWhoTriggered: Player), PromptButtonHoldBegan(playerWhoTriggered), TriggerEnded(playerWhoTriggered). A prompt works when parented to a BasePart, Attachment or Model with a PrimaryPart in Workspace. ProximityPromptService.PromptTriggered(prompt, player) handles prompts globally.",
+    "url": "https://create.roblox.com/docs/reference/engine/classes/ProximityPrompt",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "This event is triggered when the prompt key/button is pressed, or after a specified amount of time holding the button, if HoldDuration is used.",
+    "implication": "Build repair spots as procedurally created Parts with a ProximityPrompt (HoldDuration for repair jobs). Handle Triggered on the server."
+   },
+   {
+    "topic": "ProximityPrompt and RemoteEvent security",
+    "claim": "Official security guidance says exploiters can trigger ProximityPrompt activations at any range or frequency and can fire RemoteEvents with arbitrary arguments, so all critical logic must be validated on the server or run only there. Keep logic and data in ServerScriptService, never in ReplicatedStorage or Workspace.",
+    "url": "https://create.roblox.com/docs/scripting/security/security-tactics",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "Trigger client-initiated events such as Touched events or ProximityPrompt activations at any range or frequency",
+    "implication": "On Triggered, re-check on the server the character distance, job ownership and state, the cooldown and the coin balance. Validate every RemoteEvent argument's type and range, and rate-limit per player."
+   },
+   {
+    "topic": "RemoteEvent limits and delivery",
+    "claim": "RemoteEvent and UnreliableRemoteEvent are each limited to about 500 requests per second per client, shared across all remotes of the same type. RemoteEvents are reliable and ordered. Mixed tables, nil holes and functions are not passed faithfully, non-string keys are stringified, and metatables are not preserved.",
+    "url": "https://create.roblox.com/docs/reference/engine/classes/RemoteEvent",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "both have a limit of approximately 500 requests per second, per client. This limit is **shared among all remote events of the same type**.",
+    "implication": "Send small, flat, typed payloads, such as a jobId string or a decorId string, and never send price or amount from the client."
+   },
+   {
+    "topic": "Workspace.StreamingEnabled",
+    "claim": "StreamingEnabled is enabled by default for new places created in Studio and cannot be set from a script. StreamingMinRadius defaults to 64 and StreamingTargetRadius to 1024. Streamed-out instances are parented to nil, and client code should use WaitForChild or tolerate content streaming in and out. ModelStreamingMode Atomic or Persistent changes per-model behavior.",
+    "url": "https://create.roblox.com/docs/workspace/streaming",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "enabled by default for new places created in Studio. This property cannot be set in a script.",
+    "implication": "Client UI that references house parts must use WaitForChild, or the server should send IDs instead of instance references. Consider ModelStreamingMode Atomic for each house model. Small graybox lots are well within the default radii."
+   },
+   {
+    "topic": "Roblox require-by-string",
+    "claim": "require(module: ModuleScript | string | number). String paths resolve relative to the calling script: './' starts at script.Parent, '../' at script.Parent.Parent, '@self/' at script and '@game/' at game. Resolution is non-blocking and errors if the module is not yet present.",
+    "url": "https://create.roblox.com/docs/reference/engine/globals/LuaGlobals",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "In other words, require-by-string is non-blocking: it does not implicitly wait for a `Class.ModuleScript` to be created.",
+    "implication": "Pure-logic ModuleScripts can use require(\"./Sibling\") and require(\"@self/Child\") with the same semantics as Lune, so the same files run unchanged in Roblox and in Lune tests. Avoid script.Parent:WaitForChild requires in shared logic modules."
+   },
+   {
+    "topic": "Rojo project format",
+    "claim": "A *.project.json has a required name and tree. Optional fields are servePort (34872), servePlaceIds, placeId, gameId, serveAddress, globIgnorePaths and emitLegacyScripts (default true). Instance descriptions use $className, $path (relative to the project file), $properties (implicit or explicit typed values) and $ignoreUnknownInstances.",
+    "url": "https://rojo.space/docs/v7/project-format/",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "All other fields in an Instance Description are turned into instances whose name is the key.",
+    "implication": "Use the template layout: ReplicatedStorage.Shared <- src/shared, ServerScriptService.Server <- src/server, StarterPlayer.StarterPlayerScripts.Client <- src/client."
+   },
+   {
+    "topic": "Rojo default place template (current)",
+    "claim": "`rojo init` place template default.project.json maps ReplicatedStorage/Shared -> src/shared, ServerScriptService/Server -> src/server, StarterPlayer/StarterPlayerScripts/Client -> src/client, with template files src/server/init.server.luau, src/client/init.client.luau, src/shared/Hello.luau.",
+    "url": "https://github.com/rojo-rbx/rojo/blob/master/assets/project-templates/place/default.project.json",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "\"ServerScriptService\": { \"Server\": { \"$path\": \"src/server\" } }",
+    "implication": "Copy this structure directly. Server and client entry points can be init.server.luau and init.client.luau, or named *.server.luau and *.client.luau files."
+   },
+   {
+    "topic": "Rojo file naming (.server.luau/.client.luau/.luau)",
+    "claim": "*.server.lua(u) becomes a Script, *.client.lua(u) becomes a LocalScript and any other .lua(u) becomes a ModuleScript. init.server/init.client/init.lua(u) turn the parent folder into that script type. .luau support was added in Rojo 7.2.0, and `rojo init` has generated .luau since 7.4.0. The current release is 7.7.1 (October 1st, 2026).",
+    "url": "https://rojo.space/docs/v7/sync-details/",
+    "confidence": "verified-official",
+    "date": "2026-10-01 (Rojo 7.7.1 changelog)",
+    "quote": "Any file ending in .server.lua will turn into a Script instance.",
+    "implication": "Name entry points Main.server.luau and Main.client.luau, and logic modules Foo.luau. Some properties cannot be live-synced, such as HttpService.HttpEnabled and binary data, so for those use `rojo build -o place.rbxlx`."
+   },
+   {
+    "topic": "Rojo build verified locally",
+    "claim": "Empirically, with Rojo 7.7.1 installed in this environment, `rojo build` of a test project produced Script, LocalScript and ModuleScript instances from .server.luau, .client.luau and .luau files. A folder with init.luau became a ModuleScript, and Workspace $properties StreamingEnabled=true was written into the .rbxlx.",
+    "url": "https://rojo.space/docs/v7/sync-details/",
+    "confidence": "secondary",
+    "date": "accessed 2026-10-17",
+    "quote": "Built project to out.rbxlx",
+    "implication": "Rojo 7.7.1 and Lune 0.11.0 are already at /root/.cargo/bin, so CI can build the place file and run Lune tests with no extra installs."
+   },
+   {
+    "topic": "Lune - running scripts and tests",
+    "claim": "Run with `lune run script-name`. Lune looks in the current directory, then ./lune, ./.lune, ~/lune and ~/.lune. The .luau extension is recommended. process.exit(code) sets the exit code, and non-zero means error. No built-in test runner is documented. Empirically (Lune 0.11.0), a failing assert makes `lune run` exit with code 1.",
+    "url": "https://lune-org.github.io/docs/getting-started/2-command-line-usage/",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "Lune will look for the file script-name.luau in a few locations",
+    "implication": "Write tests as plain Luau scripts, for example tests/run.luau, that require the modules, assert and call process.exit(1) on failure. CI runs `lune run tests/run.luau`."
+   },
+   {
+    "topic": "Lune - relative requires (current semantics)",
+    "claim": "Lune 0.11.0 (October 11th, 2026) is current. Since 0.9.0, require paths must start with './', '../' or '@'. Bare names error. Inside init.luau, './x' resolves next to the parent directory, and '@self/x' must be used for files in the same folder. Requiring a directory loads its init.luau. Modules are cached. Empirically, a path with an explicit '.luau' extension fails to resolve.",
+    "url": "https://lune-org.github.io/docs/the-book/7-modules/",
+    "confidence": "verified-official",
+    "date": "2026-10-11 (Lune 0.11.0 changelog)",
+    "quote": "To require files inside of the same directory as the init file, the new `@self` alias must be used - like `require(\"@self/foo\")`.",
+    "implication": "Write shared modules with require(\"./Name\") or require(\"@self/Name\") and no extension. This matches Roblox require-by-string and the Rojo init.luau-to-ModuleScript mapping, so one source tree serves both runtimes."
+   }
+  ],
+  "gaps": [
+   "The ProximityPrompt reference (YAML and live .md) does not document default values for HoldDuration or MaxActivationDistance. Only KeyboardKeyCode=E, GamepadKeyCode=ButtonX and RequiresLineOfSight=true are documented. Set these explicitly in code rather than relying on the commonly cited defaults of 0 and 10.",
+   "The docs disagree on the economy currency limit: 10 'Resource types' in the event-types table versus 5 in the LogEconomyEvent reference and economy-events guide. Plan for 5.",
+   "The docs do not say whether the Retention (D1/D7) dashboard shows any data before a game reaches the stated eligibility of more than 10 DAU and 10 play hours for 7 consecutive days. They also do not explicitly say retention is 'automatic'; that is inferred because no instrumentation is described.",
+   "Per-player or per-event-type rate limits for AnalyticsService beyond the global 120 + 20\u00d7CCU per minute are not documented.",
+   "The rojo.space v7 Sync Details page still lists only .lua extensions. .luau support is verified only via the Rojo CHANGELOG (7.2.0) and the current init template, not the docs page.",
+   "It is not documented whether Rojo live-sync (`rojo serve` plus the Studio plugin) can set Workspace.StreamingEnabled, which is not scriptable. Only `rojo build` writing it into a place file was verified, empirically.",
+   "The require-by-string parity between Roblox and Lune is documented on both sides, but it was not tested inside Roblox Studio in this session. Only the Lune side was empirically verified.",
+   "Lune documents no official unit-test framework. Plain assert scripts with exit codes were verified empirically. Third-party runners such as TestEZ or Jest-Lua were not evaluated.",
+   "No devforum staff announcement date was found for MarketplaceService:BindReceiptHandler. It is present in the current reference, which calls ProcessReceipt 'legacy'.",
+   "PolicyService: rate limits beyond the '100 calls before HTTP response returns' error are not documented, and neither is caching guidance or TTL.",
+   "Verification method: Roblox reference content was read from the Roblox/creator-docs source (raw.githubusercontent.com) and cross-checked against live create.roblox.com .md endpoints for AnalyticsService, MarketplaceService, PolicyService, ProximityPrompt and LuaGlobals. Rendered HTML pages truncate tables when fetched. Commit dates of the doc source could not be retrieved because GitHub API access to that repo is not enabled in this session.",
+   "SEC filings and about.roblox.com were not consulted because this task covered engine APIs only."
+  ]
+ },
+ "research:policy": {
+  "facts": [
+   {
+    "topic": "1. Paid random items: definition and odds disclosure",
+    "claim": "Paid random items are any random outcome bought with Robux, either directly or through in-game currency bought with Robux. This covers capsules, enhancements, combinations and probability modifiers such as luck boosts and pity systems. All outcomes and their numeric odds (percentages summing to 100%) must be shown before purchase. Random rewards earned without paying Robux or Robux-bought currency don't need odds disclosure.",
+    "url": "https://create.roblox.com/docs/production/monetization/paid-random-items",
+    "confidence": "verified-official",
+    "date": "last_updated 2026-10-16",
+    "quote": "Paying Robux to buy gems or spin tickets that are spent at a prize wheel",
+    "implication": "If coins can ever be bought with Robux, every random coin sink becomes a paid random item: random buyer tastes, random repair rolls, mystery decor crates. Either never sell coins for Robux, or keep every coin-funded outcome deterministic. Random buyer preferences and job rolls are fine as long as no Robux path reaches them. Keep the coin-purchase flag and the random-outcome code in separate pure modules, and add a Lune test that asserts no Robux-linked path reaches randomness."
+   },
+   {
+    "topic": "1. PolicyService: ArePaidRandomItemsRestricted / IsPaidItemTradingAllowed",
+    "claim": "For users with ArePaidRandomItemsRestricted=true, creators must apply one of six treatments: an unpaid earnable path, a fixed disclosed order, direct purchase priced at expected value, removing or hiding the item, blocking with an error, or moving the user out of the area. Users with IsPaidItemTradingAllowed=false must not be able to trade paid items.",
+    "url": "https://create.roblox.com/docs/production/monetization/paid-random-items",
+    "confidence": "verified-official",
+    "date": "last_updated 2026-10-16",
+    "quote": "When ArePaidRandomItemsRestricted is true, the user cannot interact with paid random item generators",
+    "implication": "With no paid random items and no paid trading, the game avoids this compliance branch entirely. The questionnaire answers for paid random items and paid item trading are both 'No'. Still wrap GetPolicyInfoForPlayerAsync in one server module with pcall and a restrictive default, so later features (ads, sharing) have a single gate."
+   },
+   {
+    "topic": "1. Community Standards: paid random items",
+    "claim": "Bundling a random item into a paid pack makes the whole bundle a paid random item. Every possible outcome must give the buyer some benefit. Creators must use ArePaidRandomItemsRestricted and IsPaidItemTradingAllowed to limit these features to eligible users.",
+    "url": "https://about.roblox.com/community-standards",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "Bundling several items including a random item into a single paid \u201cpack\u201d or single transaction would still make the entire bundle a paid random item.",
+    "implication": "Starter packs and bundles must be fully deterministic: list every item. No 'bonus surprise' inside a paid bundle."
+   },
+   {
+    "topic": "1. Brazil (Digital ECA) paid random items for under-18s",
+    "claim": "In Brazil, users under 18 cannot access paid random item mechanics, and only users age-checked as 18+ can. Games that declare paid random items in the questionnaire but don't use the PolicyService API are no longer playable for under-18 users in Brazil, and Roblox audits declarations. Roblox also says more controls for under-16 users in Brazil are coming 'soon'.",
+    "url": "https://en.help.roblox.com/hc/en-us/articles/48706630819476-Brazil-Digital-ECA-Updates",
+    "confidence": "verified-official",
+    "date": "created 2026-04-28; updated 2026-10-16",
+    "quote": "In Brazil, users under the age of 18 are ineligible to access paid random item mechanics.",
+    "implication": "A game with no paid random items stays fully playable for Brazilian minors, which helps reach. The questionnaire must still be answered accurately, because Roblox audits declarations."
+   },
+   {
+    "topic": "1. Loot-box regulation risk (Belgium, Netherlands, Brazil) per SEC filing",
+    "claim": "Roblox's Q2 2026 10-Q says that in countries such as Belgium, the Netherlands and Brazil, loot box mechanics may be treated as gambling, which brings minimum-age and rating requirements.",
+    "url": "https://www.sec.gov/Archives/edgar/data/1315098/000162828026051082/rblx-20260630.htm",
+    "confidence": "verified-official",
+    "date": "filed 2026-07-30 (period ended 2026-06-30)",
+    "quote": "in countries such as Belgium, the Netherlands, and Brazil, \u201cloot box\u201d mechanics may be considered gambling",
+    "implication": "This supports the no-paid-randomness rule as a business decision as well as an ethical one. Regulatory tightening is ongoing, so random monetization carries regional reach risk."
+   },
+   {
+    "topic": "1. New York loot-box legislation status",
+    "claim": "S10091 ('protecting our kids from gamification of gambling act', companion A10709) would bar social gaming platform operators from offering gaming-related gambling, loot boxes included, to users they haven't determined are adults. It was referred to the Senate Internet and Technology committee on 2026-04-28 and hasn't passed either chamber. S10092 ('no gambling ads for kids act') passed the Senate 60-0 on 2026-06-01 and is in the Assembly Consumer Affairs committee. Neither is law.",
+    "url": "https://www.nysenate.gov/legislation/bills/2025/S10091",
+    "confidence": "verified-official",
+    "date": "S10091 last action 2026-04-28; S10092 passed Senate 2026-06-01 (https://www.nysenate.gov/legislation/bills/2025/S10092)",
+    "quote": "MINOR: AN INDIVIDUAL LESS THAN EIGHTEEN YEARS OF AGE LOCATED IN THE STATE OF NEW YORK.",
+    "implication": "No NY obligation applies yet. If enacted, the obligation falls on platform operators (Roblox), who would pass it down through PolicyService flags. A game with no paid randomness is unaffected either way."
+   },
+   {
+    "topic": "1/4. Creator Terms: loot boxes, dark patterns, addictive features",
+    "claim": "The Roblox Terms of Use (version marked Effective Date November 1, 2026) require creators to comply with all laws on loot boxes, dark patterns and other potentially addictive features. They also require odds disclosure for any Random Virtual Item before the user acquires it.",
+    "url": "https://en.help.roblox.com/hc/en-us/articles/115004647846-Roblox-Terms-of-Use",
+    "confidence": "verified-official",
+    "date": "page updated 2026-10-07; Effective Date November 1, 2026",
+    "quote": "Creator will comply with all laws applicable to their Experiences including but not limited to laws governing loot boxes, dark patterns, or other potentially addictive features.",
+    "implication": "Dark-pattern compliance is now a contract term for creators, not only best practice. The no-pressure monetization policy is the low-risk path. Document the anti-dark-pattern rules as acceptance criteria."
+   },
+   {
+    "topic": "2. Content maturity labels and unrated games",
+    "claim": "Roblox automatically restricts the playability of a game without content maturity information for all players. Minimal and Mild labels are eligible for Roblox Kids (5-8) and Roblox Select (9-15). Moderate is eligible for Select and standard Roblox (16+). Content May Vary is for age-checked 16+ only, and Restricted is for age-verified 18+ only. Inaccurate answers lead to moderation, and the questionnaire must be resubmitted when an update changes any answer.",
+    "url": "https://create.roblox.com/docs/production/promotion/content-maturity",
+    "confidence": "verified-official",
+    "date": "last_updated 2026-10-16",
+    "quote": "If a game does not have content maturity information, Roblox automatically restricts the playability of the game on the platform for all players.",
+    "implication": "The prototype must complete the full questionnaire before any public test. Aim for Minimal: cartoon renovation with no violence or fear content, which qualifies for both Kids and Select. Add a release checklist item to re-take the questionnaire whenever features change."
+   },
+   {
+    "topic": "2. Unrated experiences enforcement history",
+    "claim": "Roblox staff announced that unrated experiences would become unplayable to the public after September 30, 2025. Developers and collaborators can still build and playtest them, and an experience goes live again as soon as it has a label.",
+    "url": "https://devforum.roblox.com/t/important-updates-unrated-experiences-and-changes-to-experience-pages/3899317",
+    "confidence": "verified-official",
+    "date": "2025-08-25 (updates 2025-08-27, 2025-09-26)",
+    "quote": "will go live again as soon as it has a content maturity label",
+    "implication": "Graybox iteration can happen privately in Studio and in collaborator playtests without a label. Any public test needs the questionnaire done first."
+   },
+   {
+    "topic": "2. Release flow: default publish reaches 16+ only",
+    "claim": "When releasing, answering 'No' to the first age-restricted question gives a Content May Vary label, and the game releases only to age-checked users 16+. Reaching Kids, Select or specific regions requires the entire questionnaire. Release requirements apply to every release action, including updates and audience changes. The limit is 5 never-released games per day.",
+    "url": "https://create.roblox.com/docs/production/publishing/publish-games-and-places",
+    "confidence": "verified-official",
+    "date": "last_updated 2026-10-16",
+    "quote": "Your game receives a Content May Vary content maturity label, and it releases only to age-checked Roblox users ages 16+.",
+    "implication": "The quick-publish path keeps the game away from under-16s entirely. To test the kid audience, do the full questionnaire and the Kids/Select requirements below."
+   },
+   {
+    "topic": "2/5. Requirements to publish to under-16 audiences (Roblox Kids and Select)",
+    "claim": "To reach users under 16, the creator needs: an account in good standing; verification (government ID if 18+, facial age estimation if under 18); 2FA; a full questionnaire with a Minimal, Mild or Moderate rating; and either 2 consecutive months of Roblox Plus or Premium or a one-time refundable per-game fee. The game must also pass an evaluation. It is first available only to age-checked 16+ users, and becomes eligible after 250 unique plays by highly engaged, age-checked users within 60 days. 'Highly engaged' involves account tenure, playtime and platform spend: a purchase anywhere on Roblox in the last 60 days.",
+    "url": "https://create.roblox.com/docs/production/publishing/kids-and-select",
+    "confidence": "verified-official",
+    "date": "last_updated 2026-10-16",
+    "quote": "Once the game reaches a benchmark of 250 unique plays by highly engaged age-checked users within a 60-day window, it completes evaluation and becomes eligible for Kids and Select audiences.",
+    "implication": "This is the biggest business constraint for a solo founder with no audience. A kid-focused co-op game cannot reach under-16 players at launch. It must first attract 250 spending, age-checked 16+ players within 60 days. Plan the first marketing wave and playtests around teens 16+ and adults, possibly with Ads Manager. Budget 2 months of Roblox Plus or the 1,000 Robux refundable fee, plus government-ID verification and 2FA on the founder account."
+   },
+   {
+    "topic": "2/5. Publishing fee and expedited review fee",
+    "claim": "The publishing fee is a one-time refundable 1,000 Robux per game. The publish page says it is refunded if the game keeps 25 highly engaged players for 60 days without moderation. The Kids/Select FAQ says it is refunded automatically 90 days after the game becomes eligible, or 90 days after payment if it never becomes eligible. Neither is refunded after permanent removal for Community Standards violations. A one-time refundable 50,000 Robux expedited review fee per game skips the engagement threshold but not the safety standards.",
+    "url": "https://create.roblox.com/docs/production/publishing/publish-games-and-places",
+    "confidence": "verified-official",
+    "date": "last_updated 2026-10-16",
+    "quote": "The publishing fee is a one-time, refundable fee of 1,000 Robux per game",
+    "implication": "The 1,000 Robux fee is a small refundable deposit. The 50,000 Robux expedited fee is probably out of reach for a low-capital founder, so plan for organic evaluation. A June 16, 2026 DevForum post listed 100,000 Robux and 500 HEPs; the current docs say 50,000 and 250 plays, so rely on the docs."
+   },
+   {
+    "topic": "2/3. Account types: Roblox Kids, Roblox Select, Roblox",
+    "claim": "Roblox Kids covers self-declared or age-checked ages 5-8: Minimal or Mild games only, chat off by default, and chat can be enabled only through a linked parent after an age check. Roblox Select covers self-declared 9+ until age-checked, or age-checked 9-15: Minimal, Mild or Moderate games, chat off for self-declared accounts, and chat introduced gradually after an age check. Roblox covers age-checked 16+ with chat on by default where available.",
+    "url": "https://create.roblox.com/docs/production/publishing/kids-and-select",
+    "confidence": "verified-official",
+    "date": "last_updated 2026-10-16; accounts global since 2026-06-16 (https://about.roblox.com/newsroom/2026/06/age-based-roblox-kids-and-select-accounts-now-globally-available)",
+    "quote": "Off for self-declared accounts. Once age-checked, chat is gradually introduced with safeguards where available.",
+    "implication": "Many under-16 players will have no text chat at all, so co-op must be fully playable without chat. Use visual role and task markers, shared job boards, auto-assignment of repair jobs, and policy-compliant preset callouts. Never make chat a requirement for coordination."
+   },
+   {
+    "topic": "2. Features restricted to 16+ and excluded from Kids/Select",
+    "claim": "Social hangouts, free-form user creation and sensitive-issue games are restricted to players 16+, and parental controls cannot override this. Free-form creation means freehand drawing or painting, blank pixel grids and visible drawings. It explicitly excludes creations assembled from 3D assets, such as building a house. Social hangouts with private spaces are restricted to age-verified 18+.",
+    "url": "https://create.roblox.com/docs/production/promotion/content-maturity",
+    "confidence": "verified-official",
+    "date": "last_updated 2026-10-16 (16+ effective 2026-05-19 per https://devforum.roblox.com/t/strengthening-our-safety-policies-and-tools/3882864)",
+    "quote": "Free-form user creation does not apply to in-game creations that players assemble with 3D assets, such as building a house",
+    "implication": "Staging with curated 3D decor is allowed for kids. Do not add freehand paint or graffiti, pixel canvases or custom text signs. Don't describe the game as a 'hangout' in its title or description, because that alone can classify it as a social hangout."
+   },
+   {
+    "topic": "2/6. Private spaces (bedrooms, bathrooms, beds, toilets) in under-18 games",
+    "claim": "Roblox's creator safety guide says games available to under-18s should avoid environments set primarily in private spaces such as bedrooms, bathrooms or closets. It also recommends bounding-box limits on assets like beds. A May 12, 2026 staff update says Roblox shuts down server instances when violations happen in private spaces such as toilets and beds, and recommends 'single-occupancy' logic.",
+    "url": "https://create.roblox.com/docs/safety",
+    "confidence": "verified-official",
+    "date": "last_updated 2026-10-16; DevForum update 2026-05-12",
+    "quote": "For games available to users under 18 years of age, avoid designing environments that primarily take place in private spaces, such as bedrooms, bathrooms, or closets.",
+    "implication": "This applies directly to a house-renovation game. Make beds, toilets and bathtubs decorative and non-interactive: no Seat or lie-down, and collision or bounding limits. Keep rooms open with no lockable doors, and avoid small enclosed spaces. Make the core loop about the whole house and the exterior rather than bedrooms and bathrooms. Consider single-occupancy zones for small rooms. Server shutdowns from user violations hurt retention."
+   },
+   {
+    "topic": "3. Age checks required for chat (global)",
+    "claim": "Since January 2026, an age check is required to chat wherever chat is available, usually by facial age estimation, with ID as an option for 13+. Users chat with their own age group and the adjacent ones (groups include under 9, 9-12, 13-15). Under-9 users need parental consent for chat. Age-based chat is meant to keep children under 16 from communicating with adults. Studio real-time collaboration will also require age checks.",
+    "url": "https://about.roblox.com/newsroom/2026/01/roblox-age-checks-required-to-chat",
+    "confidence": "verified-official",
+    "date": "2026-01-07",
+    "quote": "designed to prevent children younger than 16 from communicating with adults",
+    "implication": "A server of 2-4 mixed-age players often cannot chat with each other at all. Design communication-free co-op. Any future collaborator in Team Create also needs an age check."
+   },
+   {
+    "topic": "3. Trusted Friends and cross-age play",
+    "claim": "Age-checked users 13+ can add each other as Trusted Friends and then chat and collaborate across age groups. Users under 13 can only be added with parental consent, apart from linked parents. Chat is off by default under 9, and on and filtered for 9-12.",
+    "url": "https://about.roblox.com/newsroom/2026/04/expanding-trusted-friends",
+    "confidence": "verified-official",
+    "date": "2026-04-02",
+    "quote": "Aside from linked parents, users younger than 13 can only be added as Trusted Friends with parental consent.",
+    "implication": "Family co-op (parent plus child, siblings) is the realistic social use case. Support friend joins and party invites through standard Roblox joins, and don't rely on chat."
+   },
+   {
+    "topic": "3. Preset (quick-chat) systems rules",
+    "claim": "Preset systems may be used regardless of age or age-check status only for gameplay intent ('Need help', 'Ready'). Rules: label presets as 'system preset'; make them visually distinct from chat; use no terminal punctuation; run them through TextService:FilterStringAsync; rate-limit to 1 per 10 seconds; show 12 or fewer per universe; no questions, greetings, encodings or cross-age dialogue. Roblox's built-in Quick Words already complies.",
+    "url": "https://create.roblox.com/docs/chat/preset-system-guidelines",
+    "confidence": "verified-official",
+    "date": "last_updated 2026-10-16",
+    "quote": "All presets must go through TextService:FilterStringAsync()",
+    "implication": "Up to 12 renovation callouts are allowed ('Fixing roof', 'Need paint', 'Ready to sell') if they meet these rules, or use Quick Words. Put the rate limit, max-12 count and punctuation rules in a pure module with Lune tests."
+   },
+   {
+    "topic": "3. Required use of TextChatService / PolicyService APIs",
+    "claim": "The Community Standards list, under misuse of Roblox systems, failing to use the required PolicyService and TextChatService APIs to declare features covered by Roblox policy, such as text chat.",
+    "url": "https://about.roblox.com/community-standards",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "Failing to use required PolicyService APIs and TextChatService APIs to declare features in your game that are covered by Roblox policy, such as text chat",
+    "implication": "Never build a custom chat channel through RemoteEvents. Use the default TextChatService or none."
+   },
+   {
+    "topic": "3. Text filtering obligation",
+    "claim": "Creators must filter any displayed text they don't control, such as signs, pet names or anything a player types. Roblox removes games that don't apply filtering until filtering is added.",
+    "url": "https://create.roblox.com/docs/ui/text-filtering",
+    "confidence": "verified-official",
+    "date": "last_updated 2026-10-16",
+    "quote": "you are responsible for filtering any displayed text that you don't have explicit control over",
+    "implication": "The simplest compliant design has no free-text input at all: no custom house names or listing descriptions. Use curated name pickers. If free text is added later, server-side FilterStringAsync is mandatory."
+   },
+   {
+    "topic": "3. Chat-group API for matchmaking",
+    "claim": "TextChatService:GetChatGroupsAsync is server-only and returns communication-compatible chat group IDs for matchmaking and teleports. It requires enabling 'Chat & Voice Groups APIs', and results must not be stored after the user leaves. Roblox's default matchmaking already favors players who can chat with each other.",
+    "url": "https://create.roblox.com/docs/reference/engine/classes/TextChatService",
+    "confidence": "verified-official",
+    "date": "last_updated 2026-10-16; API announced live 2026-02-06 (https://devforum.roblox.com/t/february-6-2026-an-update-on-our-age-check-to-chat-fast-follow-roadmap/4340230)",
+    "quote": "this data should not be stored after they've left.",
+    "implication": "Not needed for the prototype. If public lobbies are added later, it can group compatible players, but chat-group data must not go to DataStores."
+   },
+   {
+    "topic": "3. Private servers and under-13s",
+    "claim": "Players under 13 may not be able to join private servers, depending on privacy and parental-control settings.",
+    "url": "https://create.roblox.com/docs/production/monetization/private-servers",
+    "confidence": "verified-official",
+    "date": "last_updated 2026-10-16",
+    "quote": "Players under the age of 13 may not be able to join private servers depending on their privacy and parental control settings.",
+    "implication": "Don't make paid private servers the only way to play with friends. Public servers must support 2-4 player co-op."
+   },
+   {
+    "topic": "3/5. Early testers (pre-release playtesting) by age",
+    "claim": "Before release, a creator can invite up to 10 similar-aged friends to preview the game. An 18+ creator can add friends 16+ only, or Trusted Friends of any age, with parent approval needed for under-9s. Testers under 18 cannot preview Restricted games.",
+    "url": "https://create.roblox.com/docs/production/publishing/publish-games-and-places",
+    "confidence": "verified-official",
+    "date": "last_updated 2026-10-16",
+    "quote": "You can invite up to 10 similar-aged friends to preview your game while you're building it.",
+    "implication": "An adult founder can't easily get under-13 playtest feedback before release. The playtest plan should use 16+ testers and Trusted Friends or family with parental approval, and treat kid-audience validation as a post-eligibility milestone."
+   },
+   {
+    "topic": "4. Monetization presentation rules (pressure tactics)",
+    "claim": "Products must be presented transparently and honestly. Discounts must be genuine, not permanently 'on sale', and fair, not offered for a very short time to pressure buyers. Don't use false scarcity or countdown timers that are inaccurate or restart. Avoid pushy language with minors ('GET IT NOW', 'LAST CHANCE') in favor of 'View Item' or 'See Price'. Creators must integrate PolicyService to meet compliance obligations.",
+    "url": "https://create.roblox.com/docs/production/monetization",
+    "confidence": "verified-official",
+    "date": "last_updated 2026-10-16",
+    "quote": "Users must never be misled, confused, or pressured into purchases in ways they did not intend",
+    "implication": "This matches the founder's policy. Encode it as acceptance criteria: no timers in the shop, no sale badges, neutral button labels ('See Price'), and every purchase starts with a deliberate player click on a clearly labeled item."
+   },
+   {
+    "topic": "4. Price display: regional (managed) pricing",
+    "claim": "Regional pricing is on by default for passes. Regional prices range from 30% to 100% of the default price. Prices hard-coded in UI don't update, so users are charged the regional price while the UI shows the hard-coded number. Prices must be scripted dynamically with MarketplaceService from a client script, and a dynamic price check tool exists.",
+    "url": "https://create.roblox.com/docs/production/monetization/regional-pricing",
+    "confidence": "verified-official",
+    "date": "last_updated 2026-10-16",
+    "quote": "users are charged the correct region-specific price but the UI still shows them the hard-coded value",
+    "implication": "Never hard-code Robux prices in shop UI. That would misstate prices to kids. Fetch prices with GetProductInfo on the client, show a loading or unknown state on failure, and in Lune tests inject a price provider."
+   },
+   {
+    "topic": "4. Subscription guidelines",
+    "claim": "In-game subscriptions must show price and duration, give the same benefits on every platform, honor benefits for the full term, not send users to buy on other platforms, and not gate paid benefits behind extra tasks. Games that mislead users with false offerings are taken down.",
+    "url": "https://create.roblox.com/docs/production/monetization/subscriptions",
+    "confidence": "verified-official",
+    "date": "last_updated 2026-10-16",
+    "quote": "Specify the price and duration for each option when merchandising in-game.",
+    "implication": "If a cosmetic subscription is ever added, show price and duration on the offer screen. Gate it with IsEligibleToPurchaseSubscription."
+   },
+   {
+    "topic": "4. Advertising Standards: rewarded ads and under-13s",
+    "claim": "Developers must not use reward mechanisms that encourage users under 13 to engage with any advertising. Rewarded video may be offered to 13+ users only, through Roblox's product. Rewards must be predetermined, never random. A clear opt-in click is required. Ads cannot be forced as a progress gate, and rewards must be granted immediately. Developers must not misuse PolicyService to show ads to ineligible users, including under-13s. Ads may not be personalized for under-18s.",
+    "url": "https://en.help.roblox.com/hc/en-us/articles/13722260778260-Advertising-Standards",
+    "confidence": "verified-official",
+    "date": "Last Updated Oct 9, 2026 (U13 sections effective May 4, 2026)",
+    "quote": "Developers must not implement reward mechanisms to incentivize users under the age of 13 to engage with any type of advertising content.",
+    "implication": "Rewarded ads cannot be a core free path for the under-13 audience. Leave ads out of the prototype. If added later, use AdService plus AreAdsAllowed gating, and no reward UI for users the platform marks ineligible."
+   },
+   {
+    "topic": "4. Advertising Standards: age-appropriate ad content",
+    "claim": "When advertising content's audience includes users under 18, it must not directly urge children to buy or to ask parents to buy, must not describe a price with 'only' or 'just', and must not imply enhanced status or popularity. Ad content must not imitate non-functional system buttons or notifications.",
+    "url": "https://en.help.roblox.com/hc/en-us/articles/13722260778260-Advertising-Standards",
+    "confidence": "verified-official",
+    "date": "Last Updated Oct 9, 2026",
+    "quote": "Use qualifiers like \"only\" or \"just\" to describe a price.",
+    "implication": "These rules formally cover advertising content, such as Ads Manager campaigns for the game. Apply the same wording rules to the in-game shop as a conservative house style: no 'only 49 Robux', no 'ask your parents', no fake system popups."
+   },
+   {
+    "topic": "4. Immersive ads publisher eligibility",
+    "claim": "To serve immersive ads, a game must be public, and the owner must be 13+, ID-verified with persistent 2FA, have an approved Maturity & Compliance questionnaire, and keep 2,000 unique monthly visitors. Users ineligible for ads must have ads hidden, replaced or blocked. AreAdsAllowed comes from PolicyService.",
+    "url": "https://create.roblox.com/docs/production/monetization/immersive-ads",
+    "confidence": "verified-official",
+    "date": "last_updated 2026-10-16",
+    "quote": "Your game must maintain 2,000 unique visitors per month.",
+    "implication": "Ads are not an early revenue source. Exclude them from the prototype and the year-one business case until there are 2,000 or more monthly uniques."
+   },
+   {
+    "topic": "4. Rewarded video ad mechanics",
+    "claim": "Rewarded video ads last 6-30 seconds. Rewards must be developer products, never Robux, and cannot be randomized items. Eligibility requires being 13+, ID-verified, and a public game with at least 2,000 monthly unique visitors.",
+    "url": "https://create.roblox.com/docs/production/promotion/rewarded-video-ads",
+    "confidence": "verified-official",
+    "date": "last_updated 2026-10-16",
+    "quote": "Rewards for video ads cannot be randomized items.",
+    "implication": "Same as above. If used later, the reward is a fixed developer product, such as a fixed coin amount, granted server-side."
+   },
+   {
+    "topic": "4. Off-platform links",
+    "claim": "External URLs are prohibited except through the Social Links feature on game, group and user pages. Social links are visible only to age-checked users 16+.",
+    "url": "https://about.roblox.com/community-standards",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "Users must complete Roblox\u2019s age check process and be at least 16 years old to access the social links feature.",
+    "implication": "No Discord or newsletter links in-game. Under-16 players can't see social links, so off-platform community building can't funnel kids."
+   },
+   {
+    "topic": "5. DevEx eligibility and rates",
+    "claim": "DevEx requires: age 13+; at least 30,000 Earned Robux; a verified email; a DevEx portal account; a W-9 or W-8 on file; and full compliance with ToU and Community Standards. The standard rate is 0.0038 USD per Earned Robux, or $114 per 30,000. Cash-outs are limited to one per calendar month, and processing takes about 10 business days the first time. Earned Robux excludes Robux transfers, gift cards and moderated content.",
+    "url": "https://create.roblox.com/docs/production/monetization/developer-exchange",
+    "confidence": "verified-official",
+    "date": "last_updated 2026-10-16",
+    "quote": "The standard exchange rate for the DevEx program is 0.0038 per 1 Earned Robux, which comes out to $114 USD for 30,000 Earned Robux.",
+    "implication": "The first payout needs at least 30,000 Earned Robux, about $114. Model revenue in Earned Robux times 0.0038, and include tax-form setup in the 30-day plan."
+   },
+   {
+    "topic": "5. U.S. 18+ DevEx rate",
+    "claim": "A higher rate of 0.0054 applies to Earned Robux from developer products, passes, subscriptions and private servers bought by U.S. players age-verified 18+. To qualify, the game's player characters must be R15 (or a qualifying custom form) for 100% of active playtime, and R6 must be disabled.",
+    "url": "https://create.roblox.com/docs/production/monetization/18-plus-devex-rate",
+    "confidence": "verified-official",
+    "date": "last_updated 2026-10-16 (rate increase effective 2026-06-08 per 10-Q)",
+    "quote": "If a player can spawn into or swap to a R6 avatar at any point during active playtime, your game is not eligible",
+    "implication": "Set avatar settings to R15-only in the graybox from day one. A kid-heavy audience will rarely trigger this rate, so use 0.0038 as the base case."
+   },
+   {
+    "topic": "5. Account verification (ID) rules",
+    "claim": "Government-ID verification requires age 13+, a photo ID and a camera device. It unlocks Creator Store distribution limits and plugin monetization, and is required, with a seller account, to sell priced assets. Player:IsVerified() can gate in-game features.",
+    "url": "https://create.roblox.com/docs/production/publishing/account-verification",
+    "confidence": "verified-official",
+    "date": "last_updated 2026-10-16",
+    "quote": "Be at least 13 years of age.",
+    "implication": "The founder must complete government-ID verification and 2FA to publish to all ages, serve ads, or use Creator Store selling. Do this before the first public test."
+   },
+   {
+    "topic": "5. Creator Rewards (non-purchase earnings)",
+    "claim": "Daily Engagement pays 5 Robux per day when an Active Spender plays the experience 10+ minutes and it is one of the first three experiences they launch that day. An Active Spender has qualifying purchases of $9.99 or more in the past 60 days. Audience Expansion pays 35% of a new or reactivated user's first $100 of purchases, if they are attributed through share links and similar routes and the game averages 100+ DAU for 60 days. Awards are Earned Robux with a 60-day hold.",
+    "url": "https://create.roblox.com/docs/creator-rewards",
+    "confidence": "verified-official",
+    "date": "last_updated 2026-10-16",
+    "quote": "Creators earn 5 Robux each day if their experience is one of the first three an Active Spender plays for 10+ minutes.",
+    "implication": "This is a cosmetic-only-friendly revenue stream that doesn't depend on selling to kids. It pays for spenders' engagement, and those spenders are often older. Include it in the business case with conservative assumptions."
+   },
+   {
+    "topic": "5. Roblox Plus subscription",
+    "claim": "Roblox Plus launched globally on April 30, 2026 and replaced Premium for new purchases. It gives subscribers a 10% discount, rising to 20% from month 3, with Roblox covering the discount for creators. It is listed as one way to meet the requirement for a game to be seen by users of all ages.",
+    "url": "https://en.help.roblox.com/hc/en-us/articles/47967913158164-Roblox-Plus",
+    "confidence": "verified-official",
+    "date": "updated 2026-10-17",
+    "quote": "Expand your game\u2019s audience: Fulfill one of the criteria required for your game to be seen by users of all ages.",
+    "implication": "For the founder, 2 consecutive months of Plus is an alternative to the 1,000 Robux fee. The monthly price isn't on this page; see gaps."
+   },
+   {
+    "topic": "5. Paid access eligibility",
+    "claim": "Charging paid access (25-1,000 Robux) requires a verified email and an account at least 30 days old.",
+    "url": "https://create.roblox.com/docs/production/monetization/paid-access-robux",
+    "confidence": "verified-official",
+    "date": "last_updated 2026-10-16",
+    "quote": "Have an account that is at least 30 days old.",
+    "implication": "Paid access isn't recommended for a free-to-play kid co-op game, because it cuts reach. Noted as a fallback only."
+   },
+   {
+    "topic": "6. State attorney general actions and settlements",
+    "claim": "As of July 30, 2026, Roblox had settlements with Alabama, Mississippi, Nevada, South Dakota and West Virginia. Arkansas, Florida, Indiana, Iowa, Kentucky, Louisiana, Nebraska, Oklahoma, Tennessee, Texas and Los Angeles County had filed suits. Claims include facilitating gambling, including by minors, inadequate safety controls, and addictive design. Roblox says creators have pushed back on new publishing eligibility requirements and account types.",
+    "url": "https://www.sec.gov/Archives/edgar/data/1315098/000162828026051082/rblx-20260630.htm",
+    "confidence": "verified-official",
+    "date": "10-Q filed 2026-07-30",
+    "quote": "claims arising from allegations that the Company has facilitated gambling by users of the Platform, including by minors",
+    "implication": "Pressure on gambling-like mechanics, addictive design and child safety is rising. Expect further platform rules that land on creators. A conservative design (no paid randomness, no pressure loops, chat-optional co-op) lowers the risk of future rework."
+   },
+   {
+    "topic": "6. West Virginia settlement commitments",
+    "claim": "Under the April 21, 2026 West Virginia settlement ($11M), Roblox committed to: verify all users' ages before chat access; block chat until verification; restrict adults from contacting under-16s except through verified trusted friends; alert minors the first time they enter a private chat; and default under-16 and unverified users to safe content mode.",
+    "url": "https://ago.wv.gov/article/west-virginia-reaches-11-million-settlement-roblox-prompts-major-child-safety-overhaul",
+    "confidence": "verified-official",
+    "date": "2026-04-21",
+    "quote": "Default all under-16 and unverified users to safe content mode, blocking adult-rated material proactively.",
+    "implication": "These are platform obligations, not direct creator obligations. They make age-gated chat and safe-content defaults durable, so design for an audience that mostly can't chat and only sees Minimal, Mild or Moderate games."
+   },
+   {
+    "topic": "6. Age-check rollout and UK OSA designation (platform obligations)",
+    "claim": "Roblox has required age checks before chat in all chat-enabled regions since January 2026, and acknowledges misclassification and evasion. Ofcom designated Roblox a Category 1 and 2B service under the UK Online Safety Act on July 10, 2026.",
+    "url": "https://www.sec.gov/Archives/edgar/data/1315098/000162828026051082/rblx-20260630.htm",
+    "confidence": "verified-official",
+    "date": "10-Q filed 2026-07-30",
+    "quote": "Beginning in January 2026, we implemented mandatory age-check systems in all chat-enabled regions",
+    "implication": "More UK and EU child-safety duties are likely to come down to creators through PolicyService flags and questionnaire changes. Keep all policy gating in one module so new flags are cheap to add."
+   },
+   {
+    "topic": "6. Additional PolicyService flags creators must honor",
+    "claim": "GetPolicyInfoForPlayerAsync also returns AreAdsAllowed, IsContentSharingAllowed (required for features that let users create or share content others see), IsEligibleToPurchaseSubscription, IsEligibleToPurchaseCommerceProduct, IsEndlessContentLoadAllowed and IsEndlessContentAutoplayAllowed. Calls must be wrapped in pcall.",
+    "url": "https://create.roblox.com/docs/reference/engine/classes/PolicyService",
+    "confidence": "verified-official",
+    "date": "last_updated 2026-10-16",
+    "quote": "Any feature in the experience that enables users to create content (e.g. text, images, video, audio) that other users can see",
+    "implication": "A future 'share your flipped house' screenshot feature must check IsContentSharingAllowed and be declared in the questionnaire's Media section. No infinite feeds or autoplay. Build a PolicyGate module that defaults to the most restrictive values when the call fails."
+   }
+  ],
+  "gaps": [
+   "No official Roblox rule found that generally requires free alternatives for paid items. The only such requirement is an 'unpaid, earnable path', one of six options for users restricted from paid random items.",
+   "No official minimum creator age found for creating or selling game passes or developer products. Verified age floors are 13+ for DevEx, 13+ for immersive or rewarded ads, and 13+ for government-ID verification.",
+   "The Roblox Plus monthly price ($4.99 per TechCrunch, seen only in a search snippet) is not on the official help page. Unverified.",
+   "Two official pages give different refund conditions for the 1,000 Robux publishing fee. The publish page says refunded if 25 highly engaged players are kept for 60 days. The Kids/Select FAQ says auto-refunded 90 days after eligibility, or 90 days after payment.",
+   "The exact definition of 'highly engaged player' is not published: tenure threshold, playtime minimum, minimum spend amount. Official sources have also changed over time: the June 2026 DevForum said 500 HEPs and a 100,000 Robux expedited fee; current docs say 250 plays and 50,000 Robux. Recheck before launch.",
+   "Roblox does not define 'primarily set in private spaces'. Unverified whether a house-renovation game with bedrooms and bathrooms could be flagged. Treat beds, toilets and baths as non-interactive and use single-occupancy logic to be safe.",
+   "Not verified whether MarketplaceService:GetProductInfo, or the in-game shop price, reflects the Roblox Plus 10-20% discount. This matters for accurate price display.",
+   "Not verified what spending defaults or purchase restrictions apply to Roblox Kids and Select accounts beyond parental spending-limit controls. It is unclear whether under-13s can buy passes by default.",
+   "Kansas settlement (reported as $9.8M, September 2026) is seen only in secondary or search sources. The Kansas AG page returned 403, and the 10-Q (July 30, 2026) does not list Kansas.",
+   "New York Assembly bill A9044 and Gov. Hochul's January 2026 platform proposals were not verified on official NY sites. Only S10091 and S10092 were checked on nysenate.gov.",
+   "The IARC rating transition announced for 'later this year' (2026) has unconfirmed status. It may change the questionnaire or labels.",
+   "The Brazil Digital ECA effective date and the promised 'additional controls for under 16 in Brazil' are not detailed on the official page. Netherlands and Belgium specifics appear only in the 10-Q risk factors, not in Roblox creator docs.",
+   "It is not confirmed whether the Advertising Standards' age-appropriate wording rules ('only'/'just', urging children to buy) formally apply to a creator's in-game promotion of their own passes. The Community Standards define Advertising as compensated or off-platform promotion. Treated as house style.",
+   "The Roblox Quick Words docs page was not read in detail.",
+   "Process note: one SEC EDGAR request (data.sec.gov submissions JSON) was sent with the user's email in the User-Agent header by mistake. Later SEC requests used a generic contact string."
+  ]
+ },
+ "research:market": {
+  "facts": [
+   {
+    "topic": "Retention definitions (official)",
+    "claim": "Roblox defines D1/D7/D30 retention on a new-user cohort basis keyed to first-play date: D1 = users who first played on a date and returned the next day; D7 = returned after 1 week; D30 = returned after 1 month. D7 data for a cohort appears only 7 days later, D30 only 30 days later. The dashboard also has daily cohorts (first 10 days) and weekly cohorts (10 weeks, Mon-Sun).",
+    "url": "https://create.roblox.com/docs/production/analytics/retention",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "D1 retention: Users who first played the game on 06/20 and returned to the game the next day.",
+    "implication": "Playtest pass/fail thresholds should use the same cohort definition so they can be compared to the Creator Hub later. Within a 28-day test, D30 will exist for no cohort, and D7 only for cohorts acquired in the first ~3 weeks. The in-game analytics design should log first-play date per user."
+   },
+   {
+    "topic": "Retention and session-time definitions (official)",
+    "claim": "The Analytics overview defines Day 1 retention as the percentage of new users who played again after their first session ended, and session time as total play time divided by the number of individual sessions each day. D7/D30 'measure if users are making progress in your game and returning long-term.'",
+    "url": "https://create.roblox.com/docs/en-us/production/analytics",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "Total play time divided by number of individual sessions each day.",
+    "implication": "Average session time is a per-session figure, not per-user daily playtime, so the prototype's telemetry should record session start/end so both can be computed."
+   },
+   {
+    "topic": "Benchmarks (official)",
+    "claim": "Benchmark scorecards that compare an experience to 'similar games' are available only with 100+ DAU. They update daily, and Roblox says they are not a direct signal in the discovery algorithm. The docs publish no numeric benchmark values.",
+    "url": "https://create.roblox.com/docs/en-us/production/analytics",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "If you have 100+ DAU, you can compare how your game is performing against similar games using the benchmark scorecards.",
+    "implication": "A small first playtest (under 100 DAU) gets no official benchmark comparison. The founder must set absolute pass/fail retention targets ahead of time from secondary data and treat them as provisional until 100+ DAU unlocks scorecards."
+   },
+   {
+    "topic": "Benchmarks (official)",
+    "claim": "Since an Oct 16, 2025 DevForum Announcements post, creators can pick 'Similar experience' or 'Genre' benchmark sets on Experience Overview. Both are 'for comparison only' and do not affect Home recommendation distribution. The selection method is described only as 'other games that your users like to play'. The post gives no percentile bands or numbers.",
+    "url": "https://devforum.roblox.com/t/analytics-view-retention-by-acquisition-source-and-select-your-benchmark-set/4010157",
+    "confidence": "verified-official",
+    "date": "2025-10-16",
+    "quote": "for comparison only",
+    "implication": "Once at 100+ DAU, compare against the Genre set (Simulation/Incremental Simulator or Tycoon) as well as Similar. A DevForum bug thread reports the similar set can contain mismatched games (https://devforum.roblox.com/t/benchmark-experiences-with-similar-players-are-incorrectly-set/4027639)."
+   },
+   {
+    "topic": "Acquisition sequencing (official)",
+    "claim": "Roblox's acquisition guidance says to get session time and Day 1 retention comparable to or above similar-game benchmarks, and payer conversion and ARPPU to benchmark, because the algorithm cares about these. It also says Home is usually where the vast majority of users find games.",
+    "url": "https://create.roblox.com/docs/production/analytics/acquisition",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "Get your session time and day 1 retention to be comparable or above your similar game benchmarks.",
+    "implication": "Do not scale ad spend until D1 and session time are proven on a small cohort. Home/RFY is the main free channel, so the graybox's goal is D1 and session-quality signal, not raw visit counts."
+   },
+   {
+    "topic": "Onboarding guidance (official)",
+    "claim": "The retention doc says to get users to the fun 'ideally in 5 minutes or less after entering your game', avoid long tutorials, track completion of each FTUE step and fix big drop-offs, and monitor crash rates, frame rates and errors on every update. To improve D7, focus on the progression system. To improve D30, focus on the 'ending system', release smaller updates every 2-4 weeks and bigger feature updates every 2-3 months, and add social mechanics.",
+    "url": "https://create.roblox.com/docs/production/analytics/retention",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "ideally in 5 minutes or less after entering your game",
+    "implication": "Acceptance criterion: a new solo player completes and sells a first (tiny) house within 5 minutes. The FTUE should be instrumented as numbered funnel steps. The 2-4 week update cadence is a real content-production burden for a solo founder and belongs in the business case."
+   },
+   {
+    "topic": "Onboarding guidance (official)",
+    "claim": "Roblox's onboarding guide says new players 'typically decide their interest in a game within minutes' and recommends low early XP thresholds, A/B testing tutorial steps with Experiments, and tuning starter currency for retention. For social players it recommends collaboration/competition in onboarding and testing matchmaking parameters during FTUE.",
+    "url": "https://create.roblox.com/docs/en-us/production/game-design/onboarding",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "Social players often prefer onboarding experiences that provide opportunities for collaboration and competition.",
+    "implication": "Supports the co-op framing. The FTUE must still work for a solo joiner, since most organic RFY players arrive without friends. Consider auto-grouping solo players onto a shared house as a testable matchmaking parameter."
+   },
+   {
+    "topic": "Onboarding guidance (official)",
+    "claim": "Roblox's onboarding-techniques page recommends three techniques: persistent visual hints that stay on screen until a step is completed, contextual tutorials triggered by normal play (e.g., entering a new zone or picking up a new tool), and timed hints for stuck players. It gives an Experiments example of A/B testing a 5-second vs 10-second hint delay, and says every player action needs clear feedback.",
+    "url": "https://create.roblox.com/docs/en-us/production/game-design/onboarding-techniques",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "Persistent visual elements that stay on-screen until the player has completed a step of the tutorial",
+    "implication": "For an under-13 audience with limited reading, the graybox should use arrows/highlights on the next repair job rather than text walls. Hint timing can be a pure ModuleScript parameter that is unit-testable in Lune."
+   },
+   {
+    "topic": "Retention numbers (third-party)",
+    "claim": "GameAnalytics' 2025 Roblox Benchmark Report covers 2025 data from 'thousands of high-traffic experiences attracting more than 1 million monthly active users' and buckets games by average session length. Its charts show: 0-3 min sessions, D1 median 4.31% (P90 9.25%); 4-6 min, D1 median 6.20%; 13-18 min, D1 median 10.24%, P75 12.16%, P90 14.96%, D7 median 1.20%, P90 2.70%; 19-24 min, D1 median 11.46%, P90 18.20%, D7 P90 5.15%; 25+ min, D1 median 10.76%, P90 18.86%, D7 median 1.82%, P90 5.86%. D30 medians are 0.13-0.50%. The page does not define retention (classic vs rolling, or the denominator).",
+    "url": "https://www.gameanalytics.com/reports/2025-roblox-report",
+    "confidence": "secondary",
+    "date": "page shows 'Last updated: August 24, 2026'; data 2025",
+    "quote": "At the median, only ~4% of players come back the next day, and even the 90th percentile manages less than 10%.",
+    "implication": "These figures are 2-5x lower than the DevForum rule of thumb of 20-25% D1, likely because of a different denominator (e.g., all first-time joiners including instant bounces). Treat them as a floor, not a target. Longer sessions correlate with higher D1, which supports a deliberate 15-25 minute flip loop."
+   },
+   {
+    "topic": "Session length (third-party)",
+    "claim": "GameAnalytics reports platform-level per-user average session length percentiles for 2025 of P25 2.36 min, P50 6.62 min, P75 14.53 min and P90 26.38 min, and daily playtime of P50 16.77 min, P75 34.6 min and P90 64.91 min.",
+    "url": "https://www.gameanalytics.com/reports/2025-roblox-report",
+    "confidence": "secondary",
+    "date": "page shows 'Last updated: August 24, 2026'; data Jan 2023-Jul 2025",
+    "quote": "",
+    "implication": "A provisional target for 'successful' is an average session of at least ~15 min (P75). For context, RFY caps counted playtime at 60 min per user per game per day, so marathon sessions add nothing beyond that."
+   },
+   {
+    "topic": "Retention numbers (unverified blogs)",
+    "claim": "RoWatcher (no date, author or methodology) says 'D1 of 20-28%' is typical and 'D7 of 12-18%' is where well-designed tycoons/incremental games should land. It describes 'aim for 20-25% D1' as advice widely repeated on the DevForum. A related page frames D1 below 20% as critical.",
+    "url": "https://rowatcher.com/news/retention-benchmarks-by-roblox-genre-what-good-actually-looks-like",
+    "confidence": "unverified",
+    "date": "accessed 2026-10-17",
+    "quote": "D1 of 20\u201328%",
+    "implication": "Do not use these as hard gates. These numbers conflict sharply with GameAnalytics' medians. The playtest decision rule should state which definition it uses and be recalibrated once official benchmarks unlock at 100+ DAU."
+   },
+   {
+    "topic": "Competition: direct clone of concept",
+    "claim": "'[CLASSES] Flip a House!' (group 'Increates House', verified badge) is essentially the same concept: inherit a dirty house, clean, fix, furnish and sell it, then move to bigger houses with better gear, 'Play with up to 4 friends'. Roblox API snapshot: created 2026-07-16, 25,465,122 visits, 1,673 playing, 135,757 favorites, 88,345 up / 4,515 down votes, genre Simulation / Incremental Simulator, maxPlayers 25, updated 2026-10-13.",
+    "url": "https://games.roblox.com/v1/games?universeIds=10514223296",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17 (Roblox public API snapshot)",
+    "quote": "Scrub it, fix it, fill it with furniture, and sell it for BIG MONEY. Then do it again on a bigger house with better gear and your friends along for the ride.",
+    "implication": "The niche is NOT empty. A 3-month-old incumbent with a near-identical loop and the same 2-4 friend framing already has 25M+ visits and a ~95% like ratio. 'Fixer-Upper Friends' must differentiate visibly (e.g., buyer-taste staging puzzles, split co-op roles, fair monetization) or risk the 'non-unique games' discovery penalty."
+   },
+   {
+    "topic": "Competition: direct clone of concept",
+    "claim": "RoWatcher (third-party tracker) lists Flip a House!'s all-time peak CCU as 30K (September 2026).",
+    "url": "https://rowatcher.com/games/10514223296/flip-a-house",
+    "confidence": "secondary",
+    "date": "accessed 2026-10-17",
+    "quote": "",
+    "implication": "The incumbent peaked in September 2026 and is now ~1.7K CCU, a typical trend decay. Demand for the theme exists but may already be fading by the time a solo founder ships."
+   },
+   {
+    "topic": "Competition: monetization of direct competitor",
+    "claim": "Flip a House! has 67 game passes, 10 currently for sale: Starter Pack 59 R$, Sprint 9, Paintbrush 49, Power Potion 99, Turbo Detergent 29 ('Boosts cleaning efficiency permament'), 2x Class Luck 49, Fast Class Rolls 29, 2x Buyer Luck 49 ('Applies 2x luck to the buyer offer'), Unlimited Ranked Chests 99 ('Removes the daily limit for ranked chest') and Unlock Haunted House 349. Off-sale passes include '[Early]' tool/house unlocks that 'bypass Level N' and cash grants ($500-$100,000).",
+    "url": "https://apis.roblox.com/game-passes/v1/universes/10514223296/game-passes?passView=Full&pageSize=100",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17 (Roblox public API snapshot)",
+    "quote": "Permanently unlocks Handheld Scrubber immediately and bypasses Level 22.",
+    "implication": "The incumbent monetizes with luck multipliers, class rolls, chest limits and pay-to-skip, exactly what this concept forbids. That is a real differentiation story for parents, but it also means a fair-monetization version competes for spend against more aggressive designs. Revenue assumptions should be conservative."
+   },
+   {
+    "topic": "Competition: co-op renovation",
+    "claim": "'Renovate A House' (Renovation Entertainment) is a co-op renovation game: clear the yard, powerwash, paint, upgrade tools, and race leaderboards; 'Play solo or team up with your friends'. Roblox API snapshot: created 2026-08-19, 9,911,948 visits, 10,148 playing (highest current CCU in the niche), 136,693 favorites, 7,135 up / 1,463 down, maxPlayers 12. Passes: Infinite Money 469 R$, Double Money 67, Worker 78, Ultra Worker 178, Special Offer 143, Infinite Furniture 139, 'Most OP' tools 124 each, Rainbow/Pink Bundle 399, Color Picker 42, Leaf Blower Forever 29, Rake Forever 19.",
+    "url": "https://games.roblox.com/v1/games?universeIds=10741514942",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17 (Roblox public API snapshot)",
+    "quote": "Play solo or team up with your friends!",
+    "implication": "A second direct competitor launched only 2 months ago and is currently the niche leader by CCU. It monetizes with power and economy passes. Co-op renovation is validated demand, but two well-funded-looking teams already occupy it."
+   },
+   {
+    "topic": "Competition: 2026 clean/fix-a-house trend wave",
+    "claim": "Roblox API snapshot of a 2026 wave of house cleaning/flipping games: Wash The House (created 2026-06-27, 91.2M visits, 1,838 playing); Dig & Clean (2026-07-09, 127.2M visits, 2,611 playing, Tycoon; sells 2x Luck 199, Instant Clean 349, Mint Condition+ 1,499); Wash A House (2026-08-20, 11.3M visits); Clean a Haunted House (2026-09-12, 0.81M); House Flippers! (2026-08-11, 169K visits, 97 playing; VIP 129, x2 Cash 399); Fix a House (2026-09-24, 51K visits, 2 playing); Blox Flipper (2025-12-29, 3.2M visits, 13 playing).",
+    "url": "https://games.roblox.com/v1/games?universeIds=10405010493,10475794799,10744256065,10766122042,10678170564,10767895824,9459117468",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17 (Roblox public API snapshot)",
+    "quote": "",
+    "implication": "The niche is crowded and trend-driven. Early movers (June-July 2026) captured tens of millions of visits, while late look-alikes (House Flippers!, Fix a House) got almost nothing. Entering in late 2026+ with a graybox means competing as a late follower unless the hook is distinct."
+   },
+   {
+    "topic": "Competition: house building/design is dominated",
+    "claim": "Roblox API snapshot of evergreen house games: Welcome to Bloxburg (created 2014, 10,135,142,137 visits, 35,181 playing), Mansion Tycoon (661.5M visits, 5,702 playing), House Tycoon by Imagination Productions (351.2M visits, 340 playing; passes include 2x Cash 499, Auto Build 799, VIP 349), House Tycoon 2 (339.1M visits, 2,806 playing). Smaller home-design games: Home Creator (17.3M), Design & Decorate (0.95M, created 2026-09-11), Interior Design Battles (0.80M).",
+    "url": "https://games.roblox.com/v1/games?universeIds=88070565,4518160318,1257593254,3746418487,9785048253,10766061388,10132557826",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17 (Roblox public API snapshot)",
+    "quote": "",
+    "implication": "Home building/decor is dominated by Bloxburg and long-running tycoons. A new entrant cannot win on 'decorate a house'. The flip/buyer-taste loop is the only potentially distinct angle, and it is already taken by Flip a House!."
+   },
+   {
+    "topic": "Competition: adjacent fix-and-sell loops",
+    "claim": "Roblox API snapshot of games that share the 'fix or make it, then sell to buyers' loop: Fix It Up! (cars; created 2025-05-10, 145.0M visits, 6,108 playing), Junk Mechanics (2026-03-12, 60.2M visits, 12,477 playing), Paint to Get Rich (2026-08-20, 41.8M visits, 26,674 playing; sells 'VIP Collectors' that doubles Millionaire/Billionaire collector odds, and stacked cash multipliers from 3 to 199 R$).",
+    "url": "https://games.roblox.com/v1/games?universeIds=7673659635,9872734936,10744310825",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17 (Roblox public API snapshot)",
+    "quote": "",
+    "implication": "The underlying restore-and-sell-to-buyer loop is proven and currently hot. The 'buyers with varying tastes' mechanic has precedent (collector offers), but competitors pair it with paid odds boosts that this concept rules out."
+   },
+   {
+    "topic": "Discovery: uniqueness penalty (official)",
+    "claim": "Roblox's discovery doc says games whose metadata and place files closely resemble existing games are no longer prioritized for recommendations and may rank lower in search. Metadata implying monetary rewards is not prioritized, and mismatched metadata is not recommended. It advises adding your own spin to existing trends.",
+    "url": "https://create.roblox.com/docs/discovery",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "Games with metadata and place files that closely resemble existing games on Roblox are no longer prioritized for recommendations",
+    "implication": "Title, icon and thumbnails must not read as another 'Flip a House' clone, and the description should lead with the distinct co-op/buyer-taste hook. Avoid 'FREE MONEY' style descriptions, which competitors use."
+   },
+   {
+    "topic": "Discovery 2026: 28-day window (official)",
+    "claim": "On June 15, 2026, Roblox (CGO John Ciancutti) expanded Recommended For You from a 7-day to a 28-day view, with new signals covering day 1, day 2-7 and day 8-28. The goal is to stop favoring games that win attention with thumbnails but lack long-term value.",
+    "url": "https://about.roblox.com/newsroom/2026/06/optimizing-discovery-great-games-reach-millions-players-roblox",
+    "confidence": "verified-official",
+    "date": "2026-06-15",
+    "quote": "our new signals cover day 1, day 2\u20137, and day 8\u201328 time periods",
+    "implication": "A new game is judged on whether its first organic cohorts keep returning across 4 weeks. The graybox needs a reason to come back on days 2-7 and 8-28 (house progression, a saved co-op crew), not just a fun first session."
+   },
+   {
+    "topic": "Discovery 2026: signals and tiers (official)",
+    "claim": "The RFY signal table has two tiers. Most important: play-through rate (plays after seeing the game in RFY), first-play bounce rate (a negative signal measured at under 60 s and 61-180 s), play days per user, and playtime per user (max 60 minutes per user, per game, per day). Important: intentional co-play days per user (returning with friends via join, invites or private servers), qualified play sessions per user, spend days per user, and Robux spent per user. Time segments are D1, D2-7 and D8-28 averages. No numeric weights are published.",
+    "url": "https://create.roblox.com/docs/discovery",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "There is a maximum of 60 minutes per user, per game, per day.",
+    "implication": "Co-op is directly rewarded through 'intentional co-play days', but only in the second tier. Bounce under 60-180 s is a top-tier negative, so the first 3 minutes must hook. Spend days are a signal too, so a cosmetic-only model with very low payer conversion may slightly hurt ranking."
+   },
+   {
+    "topic": "Discovery 2026: organic-only ranking (official)",
+    "claim": "In the RFY ranking stage, Roblox counts only users who arrived through Recommended For You. Ads, curation, friends, search, social media and other sources are excluded from ranking, but they can 'accelerate your consideration' in the retrieval stage, and 'even a small number of people playing' can signal the game is worth distributing.",
+    "url": "https://create.roblox.com/docs/discovery",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "Roblox doesn't count the engagement, monetization, or retention of users first acquired from ads, curation, friends, search, social media, or any other source in the ranking stage of Recommended for You.",
+    "implication": "Friends-and-family or ad-bought playtesters can get the game retrieved but cannot inflate its ranking. The first 28 days succeed or fail on how RFY-sourced strangers behave, so the graybox must hold strangers, not just friends."
+   },
+   {
+    "topic": "Discovery 2026: new games (official)",
+    "claim": "Per the Discovery FAQ, new games do not wait 28 days. Early signals kick in immediately, staged as first session (play-through and bounce) then Day 1, Day 2-7 and Day 8-28. The system continuously explores by introducing new games to new users, retrieval needs only 'a very low minimum number of plays from any source', early underperformance is not a penalty, and 'it's very unlikely a game has a strong Day 8-28 signal if Day 1 and Day 2-7 are poor'. Play-through rate may dip temporarily as impressions grow.",
+    "url": "https://create.roblox.com/docs/discovery-faq",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17 (page undated)",
+    "quote": "New games do not have to wait 28 days before Home can recommend them.",
+    "implication": "A new game gets exploration traffic quickly, and fixes made in week 1-2 are re-tested. Iterate fast on bounce and D1 in the first week, since D8-28 strength depends on them. Treat days 1-7 as the critical tuning window inside the 28 days."
+   },
+   {
+    "topic": "Discovery 2026: explore/expand (official)",
+    "claim": "The recommendation system uses explore and expand phases. A spike in new users from recommendations often follows a content update, and if that cohort engages and monetizes well, Roblox keeps recommending the game to similar cohorts. Impressions also follow seasonality (weekly Saturday peaks, summer/back-to-school, holidays) and the relative performance of other games.",
+    "url": "https://create.roblox.com/docs/discovery",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "you might see a spike in new users from recommendations (explore) after a content update",
+    "implication": "Time the public launch and updates for weekends and school holidays. Each update is effectively a new explore test, which favors a solo founder shipping small frequent updates."
+   },
+   {
+    "topic": "Discovery 2026: platform-level effect (SEC filing)",
+    "claim": "Roblox's Q2 2026 shareholder letter (8-K Ex. 99.1, webcast July 30, 2026) says the RFY change intentionally gives more impressions to highly retentive games at the expense of near-term monetization. It says the change helped new games like Animal Hospital, Grow a Garden 2 and Kick a Lucky Block reach top experiences, and shifted engagement to new and evergreen games with lower hourly monetization, 'most notably with younger cohorts in the U.S. and Canada'. DAUs were 123M (+10% YoY), and Q3 2026 bookings guidance is -14% to -18% YoY.",
+    "url": "https://www.sec.gov/Archives/edgar/data/0001315098/000162828026051059/ex991-robloxq22026earnin.htm",
+    "confidence": "verified-official",
+    "date": "2026-07-30",
+    "quote": "which intentionally provides more impressions for highly retentive games at the expense of near term monetization",
+    "implication": "The current platform tilt favors retentive new games, which helps a well-retaining newcomer. Per-hour monetization of younger users is falling, though, so revenue projections for an under-13-heavy, cosmetic-only game should assume low ARPDAU."
+   },
+   {
+    "topic": "Under-16 audience gating (official)",
+    "claim": "To reach users under 16 (Roblox Kids, ages 5-8, and Roblox Select, ages 9-15), a game must pass an evaluation. First comes a trial phase available only to age-checked users 16+. The game must then reach 250 unique plays by highly engaged age-checked users within 60 days and pass a safety review. The creator needs government-ID verification (if 18+), 2FA, a Minimal/Mild/Moderate maturity rating, and either a one-time refundable 1,000 Robux publishing fee or 2 consecutive months of Roblox Plus/Premium. An optional refundable expedited review costs 50,000 Robux.",
+    "url": "https://create.roblox.com/docs/production/publishing/kids-and-select",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "Once the game reaches a benchmark of 250 unique plays by highly engaged age-checked users within a 60-day window, it completes evaluation and becomes eligible for Kids and Select audiences.",
+    "implication": "This is critical for a concept aimed at under-13s. The new game cannot reach its core audience on day 1. Its first organic RFY cohorts will be age-checked 16+ players until the 250 threshold is met, so early retention data may not reflect the target audience. Budget for the ID verification, 2FA and the 1,000 R$ refundable fee."
+   },
+   {
+    "topic": "Under-16 audience gating (official)",
+    "claim": "A 'highly engaged player' must meet requirements on account tenure, playtime in your game and platform spend (any purchase anywhere on Roblox in the last 60 days). The game itself does not need to be monetized for players to count.",
+    "url": "https://create.roblox.com/docs/production/publishing/kids-and-select",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "Users who meet the criteria for \"platform spend\" have made a minimum purchase anywhere on Roblox in the last 60 days",
+    "implication": "A cosmetic-only or free game can still qualify. Friends-and-family testers will only count if they are age-checked, have tenure and have spent on Roblox recently."
+   },
+   {
+    "topic": "Under-16 audience gating (DevForum announcement)",
+    "claim": "In DevForum Announcements, RbxRocketMan announced that the Highly Engaged Player entry threshold was cut from 500 to 250 on Aug 19, 2026, with a separate maintenance bar of 25 over 60 days (lowered from 100 on July 16). The June 16, 2026 global-launch post says unevaluated games remain available to 16+ users, that Kids and Select hold 'tens of thousands' of games representing 'the vast majority of playtime', and that a beta Ads Manager Engagement objective exists to reach the threshold. It originally listed the expedited fee as 100,000 Robux; current docs say 50,000.",
+    "url": "https://devforum.roblox.com/t/highly-engaged-player-threshold-drops-to-250/4820164",
+    "confidence": "verified-official",
+    "date": "2026-08-19",
+    "quote": "Starting today, the Highly Engaged Player threshold has been cut in half from 500 to 250.",
+    "implication": "The threshold has been loosened twice in 2026 and may change again, so re-check it at launch. Because the vast majority of playtime is in the Kids/Select catalog, reaching it is likely a prerequisite for meaningful scale. Global-launch post: https://devforum.roblox.com/t/roblox-kids-and-select-global-launch-upcoming-updates-to-eligibility-ads-manager-and-expedited-review/4685717"
+   },
+   {
+    "topic": "Under-16 audience gating (SEC filing)",
+    "claim": "The Q2 2026 shareholder letter states 57% of global DAUs had age-checked by the end of Q2 and that Kids and Select accounts offer access to about 30,000 games.",
+    "url": "https://www.sec.gov/Archives/edgar/data/0001315098/000162828026051059/ex991-robloxq22026earnin.htm",
+    "confidence": "verified-official",
+    "date": "2026-07-30",
+    "quote": "By the end of Q2, 57% of global DAUs have age-checked",
+    "implication": "Roughly 43% of DAU were not age-checked as of Q2. During the 16+-only trial phase, the reachable pool is a subset of the platform."
+   },
+   {
+    "topic": "Ads Manager costs (official)",
+    "claim": "The official Ads Manager doc publishes no minimum campaign or daily budget and no typical cost per play, CPM or CPC. It states: minimum ad credit purchase is 1 credit; Robux-to-credit conversion is open to users 13+ and is irreversible; adding a card requires age 18+ (with a $1.00 temporary hold); budgets are daily or lifetime; auto-bidding offers 'ads system discounts designed for games that make Roblox overall healthier'; the first 24 hours are a 'Learning' phase; CPP is defined as spend divided by plays; ads show on Home and in search.",
+    "url": "https://create.roblox.com/docs/production/promotion/ads-manager",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "You must buy a minimum of 1 ad credit.",
+    "implication": "No official cost benchmark exists for planning a first playtest audience. The founder must run a tiny capped test (a few days) and measure CPP directly. The exact Robux-to-credit rate is only previewed in the UI."
+   },
+   {
+    "topic": "Ads Manager: Engagement objective (official)",
+    "claim": "The Engagement objective targets age-checked highly engaged players whose sessions count toward the Roblox Kids and Select threshold. Roblox warns to expect a higher cost per play than the Plays objective, to use a dedicated budget, and to pause manually because campaigns don't stop at the threshold.",
+    "url": "https://create.roblox.com/docs/production/promotion/ads-manager",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "Expect a higher cost per play (CPP). The highly engaged player audience is smaller than the Plays audience, which typically results in a higher CPP.",
+    "implication": "There is an official paid path to unlock the under-16 audience faster: buy roughly 250 highly engaged plays. Its cost is unpublished and must be measured. This is likely the most important early ad spend for this concept."
+   },
+   {
+    "topic": "Ads and RFY interaction (official)",
+    "claim": "Engagement, retention and monetization from ad-acquired users are excluded from RFY ranking signals. Ads do not penalize or downrank a game, an ad-acquired user is considered already acquired, and a drop in RFY impressions after advertising is not a penalty. Ad attribution credits plays and earnings for 30 days after a user's first join via an ad, and reports can lag up to 48 hours.",
+    "url": "https://create.roblox.com/docs/discovery-faq",
+    "confidence": "verified-official",
+    "date": "accessed 2026-10-17",
+    "quote": "Engagement, retention, and monetization from users acquired through ads are excluded from RFY ranking signals.",
+    "implication": "Ads are useful for (a) measuring retention on a controlled cohort, (b) reaching the Kids/Select threshold and (c) seeding retrieval, but they cannot buy RFY rank. Ads Manager's own retention view (30-day attribution) is the way to read the paid cohort's D1/D7."
+   },
+   {
+    "topic": "Ads Manager minimums (community, unofficial)",
+    "claim": "Non-staff DevForum replies report a minimum ad budget of 5 credits per day with at least 2 days (10 credits total) (July 19, 2026). A Jan 2026 reply says the UI recommends 16 credits/day. An April 2026 thread equates '10 ad credits per day' with '$10 USD or 2,850 Robux', and one commenter claims sponsored players give '20-30% worse stats' than algorithm players and that Roblox 'can take 1-3 weeks' before recommending a game.",
+    "url": "https://devforum.roblox.com/t/minimum-ad-credit-to-create-the-ad-for-game/4745731",
+    "confidence": "unverified",
+    "date": "2026-07-19",
+    "quote": "The minimum ad budget is 5 Credits per day",
+    "implication": "These are working assumptions only: a first ad test might cost about $10-$100 over 2-7 days if 1 credit is about $1. Verify in the live Ads Manager UI before budgeting. Other threads: https://devforum.roblox.com/t/how-much-should-i-spend-on-ad-credits-for-a-test-run-of-my-game/4259529 and https://devforum.roblox.com/t/how-much-money-should-i-spent-to-get-into-the-algorithm/4551439"
+   }
+  ],
+  "gaps": [
+   "Roblox publishes NO numeric D1/D7/D30 or session-time benchmark values in its docs, newsroom or the benchmark-set announcement. The figures exist only inside the Creator Hub scorecards, which unlock at 100+ DAU. Typical vs successful official numbers could not be verified.",
+   "GameAnalytics' 2025 Roblox report does not define retention (classic vs rolling, denominator), so its ~4-11% median D1 cannot be reconciled with the DevForum/blog rule of thumb of 20-25% D1. The full PDF (investgame.net mirror) exceeded fetch limits and was not read.",
+   "No genre-specific (tycoon / incremental simulator / co-op) official retention benchmark was found. The RoWatcher tycoon ranges (D1 20-28%, D7 12-18%) have no stated methodology.",
+   "Competitor retention, revenue, payer conversion and developer-product (consumable) catalogs are not public. Only game passes and vote counts were retrievable from Roblox APIs.",
+   "Peak CCU figures come only from third-party trackers (e.g., RoWatcher's 30K peak for Flip a House!). Roblox's public API gives only the current 'playing' count (snapshot 2026-10-17).",
+   "It could not be verified whether Flip a House!, Renovate A House or other competitors have passed Kids/Select evaluation, i.e., whether they reach under-16 players.",
+   "RFY signal weights are published only as two priority tiers (most important / important), not numeric weights. The June 15, 2026 DevForum post's relative-importance chart is an image not readable as text.",
+   "The DevForum RFY announcement author (BurningEmbar) could not be confirmed as Roblox staff from page text, although it sits in the Announcements category. The same facts were taken from create.roblox.com docs instead.",
+   "The Discovery FAQ page shows no publication or last-updated date.",
+   "Official Ads Manager minimum daily budget, typical cost per play (Plays or Engagement objective) and the USD price of one ad credit are not published. The Robux-to-credit rate is only previewed in the UI. The community figures (5 credits/day x 2 days; ~$1 per credit) are unverified.",
+   "There is no official data on how long a typical new game takes to reach the 250 highly-engaged-player Kids/Select threshold, or what an Engagement-objective campaign costs to get there.",
+   "The date the expedited review fee changed from 100,000 Robux (June 16, 2026 post) to 50,000 Robux (current docs) was not found.",
+   "The URL and content of the 'Sketch Series: Onboarding Techniques' resource listed on the game-design hub were not retrieved.",
+   "Roblox's under-13 share of DAU was not extracted from the Q2 2026 letter. Only the 57% age-checked figure and the 'younger cohorts' monetization decline were confirmed.",
+   "The lensblox claim that the RFY change 'cost the company $9B' in market value is unsourced and was excluded. The causal link between the algorithm change and the stock drop is that author's interpretation."
+  ]
+ }
+}
